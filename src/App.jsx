@@ -1,64 +1,244 @@
 import { useEffect, useMemo, useState } from "react"
 import "./App.css"
 
-const emptyClient = {
-  name: "",
-  phone: "",
-  email: "",
-  note: "",
-}
-
-const emptyDebt = {
-  clientId: "",
-  concept: "",
-  amount: "",
-  dueDate: "",
-}
-
-function money(value) {
-  return new Intl.NumberFormat("es-DO", {
+const money = (value) =>
+  new Intl.NumberFormat("es-DO", {
     style: "currency",
     currency: "DOP",
-    maximumFractionDigits: 2,
-  }).format(value || 0)
+    minimumFractionDigits: 2,
+  }).format(Number(value || 0))
+
+const today = new Date().toISOString().split("T")[0]
+
+const initialClients = [
+  {
+    id: 1,
+    name: "María Rodríguez",
+    phone: "809-555-0142",
+    email: "maria@email.com",
+    createdAt: today,
+  },
+  {
+    id: 2,
+    name: "Carlos Méndez",
+    phone: "829-555-0198",
+    email: "carlos@email.com",
+    createdAt: today,
+  },
+]
+
+const initialDebts = [
+  {
+    id: 1,
+    clientId: 1,
+    concept: "Compra de mercancía",
+    amount: 12500,
+    dueDate: "2026-09-20",
+    createdAt: today,
+  },
+  {
+    id: 2,
+    clientId: 2,
+    concept: "Servicio mensual",
+    amount: 7800,
+    dueDate: "2026-09-25",
+    createdAt: today,
+  },
+]
+
+function Logo({ collapsed = false }) {
+  return (
+    <div className={`brand ${collapsed ? "brand-small" : ""}`}>
+      <div className="brand-mark">
+        <svg viewBox="0 0 48 48" aria-hidden="true">
+          <path
+            d="M10 8v32c0 2.2 1.8 4 4 4h3V27l14 13c1.7 1.6 4.3 1.5 5.9-.2l.7-.8-13-12 13.3-12.3c1.7-1.6 1.8-4.2.2-5.9l-.8-.8L17 24V8h-3c-2.2 0-4 1.8-4 4Z"
+            fill="currentColor"
+          />
+          <path
+            d="M18 25 31.5 12h7L25 25h-7Z"
+            fill="#4169ff"
+          />
+          <path
+            d="m18 32 4 4 5-5"
+            fill="none"
+            stroke="#4169ff"
+            strokeWidth="3.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </div>
+
+      {!collapsed && <span>KOBRI</span>}
+    </div>
+  )
 }
 
-function formatDate(date) {
-  if (!date) return "—"
+function Icon({ name, size = 20 }) {
+  const common = {
+    width: size,
+    height: size,
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 1.8,
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+  }
 
-  return new Intl.DateTimeFormat("es-DO", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  }).format(new Date(`${date}T00:00:00`))
+  const icons = {
+    home: (
+      <>
+        <path d="m3 10 9-7 9 7" />
+        <path d="M5 9v11h14V9" />
+        <path d="M9 20v-6h6v6" />
+      </>
+    ),
+    users: (
+      <>
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+        <circle cx="9" cy="7" r="4" />
+        <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+      </>
+    ),
+    wallet: (
+      <>
+        <path d="M4 7V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2" />
+        <path d="M4 7h15a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2Z" />
+        <path d="M16 14h.01" />
+      </>
+    ),
+    card: (
+      <>
+        <rect x="2" y="5" width="20" height="14" rx="2" />
+        <path d="M2 10h20" />
+      </>
+    ),
+    bell: (
+      <>
+        <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9" />
+        <path d="M10 21h4" />
+      </>
+    ),
+    search: (
+      <>
+        <circle cx="11" cy="11" r="7" />
+        <path d="m20 20-4-4" />
+      </>
+    ),
+    plus: (
+      <>
+        <path d="M12 5v14" />
+        <path d="M5 12h14" />
+      </>
+    ),
+    arrow: (
+      <>
+        <path d="M5 12h14" />
+        <path d="m13 6 6 6-6 6" />
+      </>
+    ),
+    trend: (
+      <>
+        <path d="m3 17 6-6 4 4 8-9" />
+        <path d="M15 6h6v6" />
+      </>
+    ),
+    calendar: (
+      <>
+        <rect x="3" y="4" width="18" height="17" rx="2" />
+        <path d="M16 2v4M8 2v4M3 10h18" />
+      </>
+    ),
+    more: (
+      <>
+        <circle cx="5" cy="12" r="1" fill="currentColor" />
+        <circle cx="12" cy="12" r="1" fill="currentColor" />
+        <circle cx="19" cy="12" r="1" fill="currentColor" />
+      </>
+    ),
+    close: (
+      <>
+        <path d="m6 6 12 12M18 6 6 18" />
+      </>
+    ),
+    check: (
+      <>
+        <path d="m5 12 4 4L19 6" />
+      </>
+    ),
+    dollar: (
+      <>
+        <path d="M12 2v20" />
+        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H7" />
+      </>
+    ),
+    menu: (
+      <>
+        <path d="M4 6h16M4 12h16M4 18h16" />
+      </>
+    ),
+  }
+
+  return <svg {...common}>{icons[name] || icons.more}</svg>
+}
+
+function getStatus(debt, paid) {
+  if (paid >= debt.amount) {
+    return { label: "Pagada", className: "paid" }
+  }
+
+  if (debt.dueDate < today) {
+    return { label: "Vencida", className: "overdue" }
+  }
+
+  return { label: "Pendiente", className: "pending" }
 }
 
 function App() {
-  const [page, setPage] = useState("inicio")
+  const [activeView, setActiveView] = useState("dashboard")
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [showDebtModal, setShowDebtModal] = useState(false)
+  const [showClientModal, setShowClientModal] = useState(false)
+  const [showPaymentModal, setShowPaymentModal] = useState(false)
+  const [selectedDebt, setSelectedDebt] = useState(null)
+  const [search, setSearch] = useState("")
 
   const [clients, setClients] = useState(() => {
-    return JSON.parse(localStorage.getItem("kobri_clients") || "[]")
+    const saved = localStorage.getItem("kobri_clients")
+    return saved ? JSON.parse(saved) : initialClients
   })
 
   const [debts, setDebts] = useState(() => {
-    return JSON.parse(localStorage.getItem("kobri_debts") || "[]")
+    const saved = localStorage.getItem("kobri_debts")
+    return saved ? JSON.parse(saved) : initialDebts
   })
 
   const [payments, setPayments] = useState(() => {
-    return JSON.parse(localStorage.getItem("kobri_payments") || "[]")
+    const saved = localStorage.getItem("kobri_payments")
+    return saved ? JSON.parse(saved) : []
   })
 
-  const [showClientModal, setShowClientModal] = useState(false)
-  const [showDebtModal, setShowDebtModal] = useState(false)
-  const [showPaymentModal, setShowPaymentModal] = useState(false)
+  const [clientForm, setClientForm] = useState({
+    name: "",
+    phone: "",
+    email: "",
+  })
 
-  const [clientForm, setClientForm] = useState(emptyClient)
-  const [debtForm, setDebtForm] = useState(emptyDebt)
+  const [debtForm, setDebtForm] = useState({
+    clientId: "",
+    concept: "",
+    amount: "",
+    dueDate: "",
+  })
 
-  const [paymentDebt, setPaymentDebt] = useState(null)
-  const [paymentAmount, setPaymentAmount] = useState("")
-
-  const [search, setSearch] = useState("")
+  const [paymentForm, setPaymentForm] = useState({
+    amount: "",
+    method: "Efectivo",
+    note: "",
+  })
 
   useEffect(() => {
     localStorage.setItem("kobri_clients", JSON.stringify(clients))
@@ -72,88 +252,84 @@ function App() {
     localStorage.setItem("kobri_payments", JSON.stringify(payments))
   }, [payments])
 
-  const getPaid = (debtId) => {
-    return payments
+  const paidForDebt = (debtId) =>
+    payments
       .filter((payment) => payment.debtId === debtId)
-      .reduce((total, payment) => total + Number(payment.amount), 0)
-  }
+      .reduce((sum, payment) => sum + Number(payment.amount), 0)
 
-  const getRemaining = (debt) => {
-    return Math.max(0, Number(debt.amount) - getPaid(debt.id))
-  }
+  const debtRows = useMemo(() => {
+    return debts.map((debt) => {
+      const client = clients.find((item) => item.id === debt.clientId)
+      const paid = paidForDebt(debt.id)
+      const balance = Math.max(Number(debt.amount) - paid, 0)
 
-  const getDebtStatus = (debt) => {
-    const remaining = getRemaining(debt)
+      return {
+        ...debt,
+        client,
+        paid,
+        balance,
+        status: getStatus(debt, paid),
+      }
+    })
+  }, [debts, clients, payments])
 
-    if (remaining <= 0) return "paid"
-
-    if (
-      debt.dueDate &&
-      new Date(`${debt.dueDate}T23:59:59`) < new Date()
-    ) {
-      return "overdue"
-    }
-
-    return "pending"
-  }
-
-  const totals = useMemo(() => {
-    const totalDebt = debts.reduce(
-      (total, debt) => total + Number(debt.amount),
+  const stats = useMemo(() => {
+    const totalDebt = debtRows.reduce((sum, debt) => sum + debt.amount, 0)
+    const totalPaid = debtRows.reduce((sum, debt) => sum + debt.paid, 0)
+    const totalPending = debtRows.reduce(
+      (sum, debt) => sum + debt.balance,
       0
     )
-
-    const totalPaid = payments.reduce(
-      (total, payment) => total + Number(payment.amount),
-      0
-    )
-
-    const totalRemaining = debts.reduce(
-      (total, debt) => total + getRemaining(debt),
-      0
-    )
-
-    const overdue = debts
-      .filter((debt) => getDebtStatus(debt) === "overdue")
-      .reduce((total, debt) => total + getRemaining(debt), 0)
+    const overdue = debtRows
+      .filter((debt) => debt.status.className === "overdue")
+      .reduce((sum, debt) => sum + debt.balance, 0)
 
     return {
       totalDebt,
       totalPaid,
-      totalRemaining,
+      totalPending,
       overdue,
     }
-  }, [debts, payments])
+  }, [debtRows])
 
-  const filteredClients = clients.filter((client) => {
-    const text = `${client.name} ${client.phone} ${client.email}`.toLowerCase()
-    return text.includes(search.toLowerCase())
-  })
+  const filteredClients = clients.filter((client) =>
+    `${client.name} ${client.phone} ${client.email}`
+      .toLowerCase()
+      .includes(search.toLowerCase())
+  )
 
-  const recentDebts = [...debts]
-    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-    .slice(0, 5)
+  const filteredDebts = debtRows.filter((debt) =>
+    `${debt.client?.name || ""} ${debt.concept} ${debt.status.label}`
+      .toLowerCase()
+      .includes(search.toLowerCase())
+  )
 
-  const upcomingDebts = [...debts]
-    .filter((debt) => getDebtStatus(debt) === "pending")
-    .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
-    .slice(0, 5)
+  function navigate(view) {
+    setActiveView(view)
+    setSearch("")
+    setSidebarOpen(false)
+  }
 
   function addClient(event) {
     event.preventDefault()
 
     if (!clientForm.name.trim()) return
 
-    const client = {
-      id: crypto.randomUUID(),
+    const newClient = {
+      id: Date.now(),
       ...clientForm,
       createdAt: new Date().toISOString(),
     }
 
-    setClients((current) => [...current, client])
-    setClientForm(emptyClient)
+    setClients((current) => [...current, newClient])
+
+    setClientForm({
+      name: "",
+      phone: "",
+      email: "",
+    })
+
     setShowClientModal(false)
-    setPage("clientes")
   }
 
   function addDebt(event) {
@@ -162,246 +338,481 @@ function App() {
     if (
       !debtForm.clientId ||
       !debtForm.concept.trim() ||
-      !Number(debtForm.amount)
+      !debtForm.amount ||
+      !debtForm.dueDate
     ) {
       return
     }
 
-    const debt = {
-      id: crypto.randomUUID(),
-      clientId: debtForm.clientId,
+    const newDebt = {
+      id: Date.now(),
+      clientId: Number(debtForm.clientId),
       concept: debtForm.concept,
       amount: Number(debtForm.amount),
       dueDate: debtForm.dueDate,
       createdAt: new Date().toISOString(),
     }
 
-    setDebts((current) => [...current, debt])
-    setDebtForm(emptyDebt)
+    setDebts((current) => [newDebt, ...current])
+
+    setDebtForm({
+      clientId: "",
+      concept: "",
+      amount: "",
+      dueDate: "",
+    })
+
     setShowDebtModal(false)
-    setPage("deudas")
-  }
-
-  function registerPayment(event) {
-    event.preventDefault()
-
-    const amount = Number(paymentAmount)
-
-    if (!paymentDebt || !amount || amount <= 0) return
-
-    const remaining = getRemaining(paymentDebt)
-
-    if (amount > remaining) return
-
-    const payment = {
-      id: crypto.randomUUID(),
-      debtId: paymentDebt.id,
-      amount,
-      date: new Date().toISOString(),
-    }
-
-    setPayments((current) => [...current, payment])
-    setPaymentAmount("")
-    setPaymentDebt(null)
-    setShowPaymentModal(false)
-  }
-
-  function clientName(clientId) {
-    return clients.find((client) => client.id === clientId)?.name || "Cliente"
   }
 
   function openPayment(debt) {
-    setPaymentDebt(debt)
-    setPaymentAmount("")
+    setSelectedDebt(debt)
+
+    setPaymentForm({
+      amount: debt.balance,
+      method: "Efectivo",
+      note: "",
+    })
+
     setShowPaymentModal(true)
   }
 
-  function statusLabel(status) {
-    if (status === "paid") return "Pagada"
-    if (status === "overdue") return "Vencida"
-    return "Pendiente"
+  function addPayment(event) {
+    event.preventDefault()
+
+    if (!selectedDebt || !paymentForm.amount) return
+
+    const amount = Number(paymentForm.amount)
+
+    if (amount <= 0 || amount > selectedDebt.balance) return
+
+    const payment = {
+      id: Date.now(),
+      debtId: selectedDebt.id,
+      amount,
+      method: paymentForm.method,
+      note: paymentForm.note,
+      date: new Date().toISOString(),
+    }
+
+    setPayments((current) => [payment, ...current])
+
+    setShowPaymentModal(false)
+    setSelectedDebt(null)
+  }
+
+  function pageTitle() {
+    const titles = {
+      dashboard: ["Resumen", "Todo lo importante de tu negocio, en un solo lugar."],
+      clients: ["Clientes", "Administra tus clientes y conoce su situación."],
+      debts: ["Deudas", "Controla todo lo que está pendiente de cobro."],
+      payments: ["Pagos", "Consulta el historial de dinero recibido."],
+    }
+
+    return titles[activeView]
   }
 
   return (
-    <div className="app">
-      <aside className="sidebar">
-        <div className="brand">
-          <div className="brand-mark">K</div>
-          <span>KOBRI</span>
+    <div className="app-shell">
+      {sidebarOpen && (
+        <div
+          className="mobile-overlay"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      <aside className={`sidebar ${sidebarOpen ? "sidebar-open" : ""}`}>
+        <div className="sidebar-top">
+          <Logo />
+
+          <button
+            className="mobile-close"
+            onClick={() => setSidebarOpen(false)}
+            aria-label="Cerrar menú"
+          >
+            <Icon name="close" size={20} />
+          </button>
         </div>
 
-        <nav className="nav">
+        <div className="workspace">
+          <div className="workspace-avatar">K</div>
+          <div>
+            <strong>Mi negocio</strong>
+            <span>Cuenta gratuita</span>
+          </div>
+          <Icon name="more" size={18} />
+        </div>
+
+        <nav className="navigation">
+          <div className="nav-label">GESTIÓN</div>
+
           <button
-            className={`nav-item ${page === "inicio" ? "active" : ""}`}
-            onClick={() => setPage("inicio")}
+            className={`nav-item ${
+              activeView === "dashboard" ? "active" : ""
+            }`}
+            onClick={() => navigate("dashboard")}
           >
-            <span>⌂</span>
-            Inicio
+            <Icon name="home" />
+            <span>Inicio</span>
           </button>
 
           <button
-            className={`nav-item ${page === "clientes" ? "active" : ""}`}
-            onClick={() => setPage("clientes")}
+            className={`nav-item ${
+              activeView === "clients" ? "active" : ""
+            }`}
+            onClick={() => navigate("clients")}
           >
-            <span>♙</span>
-            Clientes
+            <Icon name="users" />
+            <span>Clientes</span>
           </button>
 
           <button
-            className={`nav-item ${page === "deudas" ? "active" : ""}`}
-            onClick={() => setPage("deudas")}
+            className={`nav-item ${
+              activeView === "debts" ? "active" : ""
+            }`}
+            onClick={() => navigate("debts")}
           >
-            <span>▣</span>
-            Deudas
+            <Icon name="wallet" />
+            <span>Deudas</span>
           </button>
 
           <button
-            className={`nav-item ${page === "pagos" ? "active" : ""}`}
-            onClick={() => setPage("pagos")}
+            className={`nav-item ${
+              activeView === "payments" ? "active" : ""
+            }`}
+            onClick={() => navigate("payments")}
           >
-            <span>✓</span>
-            Pagos
+            <Icon name="card" />
+            <span>Pagos</span>
           </button>
         </nav>
 
         <div className="sidebar-bottom">
-          <div className="business-mini">
-            <div className="avatar">K</div>
+          <div className="help-card">
+            <div className="help-icon">?</div>
             <div>
-              <strong>Mi negocio</strong>
-              <small>Cuenta gratuita</small>
+              <strong>¿Necesitas ayuda?</strong>
+              <span>Estamos aquí para ayudarte.</span>
             </div>
+          </div>
+
+          <div className="profile-mini">
+            <div className="profile-avatar">K</div>
+            <div>
+              <strong>Mi cuenta</strong>
+              <span>Plan gratuito</span>
+            </div>
+            <Icon name="more" size={18} />
           </div>
         </div>
       </aside>
 
-      <main className="main">
+      <main className="main-content">
         <header className="topbar">
-          <div>
-            <div className="mobile-brand">KOBRI</div>
+          <button
+            className="mobile-menu"
+            onClick={() => setSidebarOpen(true)}
+            aria-label="Abrir menú"
+          >
+            <Icon name="menu" />
+          </button>
+
+          <div className="breadcrumb">
+            <span>Kobri</span>
+            <b>/</b>
+            <strong>{pageTitle()[0]}</strong>
           </div>
 
           <div className="topbar-actions">
-            <button className="icon-button">🔔</button>
-            <div className="profile">K</div>
+            <button className="icon-button notification">
+              <Icon name="bell" size={19} />
+              <i />
+            </button>
+
+            <div className="top-profile">
+              <div className="top-avatar">K</div>
+              <div className="top-profile-text">
+                <strong>Mi negocio</strong>
+                <span>Administrador</span>
+              </div>
+            </div>
           </div>
         </header>
 
-        {page === "inicio" && (
-          <>
-            <div className="page-header">
-              <div>
-                <h1>Buenos días 👋</h1>
-                <p>Aquí tienes el resumen de tu negocio.</p>
-              </div>
-
-              <button
-                className="primary-button"
-                onClick={() => {
-                  if (clients.length === 0) {
-                    setPage("clientes")
-                    return
-                  }
-
-                  setDebtForm({
-                    ...emptyDebt,
-                    clientId: clients[0].id,
-                  })
-                  setShowDebtModal(true)
-                }}
-              >
-                + Nueva deuda
-              </button>
-            </div>
-
-            <section className="stats">
-              <div className="stat-card">
-                <span>Por cobrar</span>
-                <strong>{money(totals.totalRemaining)}</strong>
-                <small>Saldo pendiente</small>
-              </div>
-
-              <div className="stat-card">
-                <span>Cobrado</span>
-                <strong>{money(totals.totalPaid)}</strong>
-                <small>Pagos registrados</small>
-              </div>
-
-              <div className="stat-card danger-card">
-                <span>Vencido</span>
-                <strong>{money(totals.overdue)}</strong>
-                <small>Requiere atención</small>
-              </div>
-
-              <div className="stat-card">
-                <span>Clientes</span>
-                <strong>{clients.length}</strong>
-                <small>Clientes registrados</small>
-              </div>
-            </section>
-
-            <section className="dashboard-grid">
-              <div className="panel">
-                <div className="panel-header">
-                  <div>
-                    <h2>Deudas recientes</h2>
-                    <p>Las últimas deudas registradas.</p>
-                  </div>
-
-                  <button
-                    className="text-button"
-                    onClick={() => setPage("deudas")}
-                  >
-                    Ver todas
-                  </button>
+        <div className="page-content">
+          {activeView === "dashboard" && (
+            <>
+              <section className="hero">
+                <div>
+                  <div className="eyebrow">VISIÓN GENERAL</div>
+                  <h1>
+                    Buenos días <span>👋</span>
+                  </h1>
+                  <p>
+                    {pageTitle()[1]}
+                  </p>
                 </div>
 
-                {recentDebts.length === 0 ? (
+                <button
+                  className="primary-button"
+                  onClick={() => setShowDebtModal(true)}
+                >
+                  <Icon name="plus" size={18} />
+                  Nueva deuda
+                </button>
+              </section>
+
+              <section className="stats-grid">
+                <div className="stat-card">
+                  <div className="stat-head">
+                    <span>Por cobrar</span>
+                    <div className="stat-icon blue">
+                      <Icon name="wallet" size={18} />
+                    </div>
+                  </div>
+                  <strong>{money(stats.totalPending)}</strong>
+                  <div className="stat-footer">
+                    <span className="neutral">Saldo pendiente</span>
+                  </div>
+                </div>
+
+                <div className="stat-card">
+                  <div className="stat-head">
+                    <span>Cobrado</span>
+                    <div className="stat-icon green">
+                      <Icon name="check" size={18} />
+                    </div>
+                  </div>
+                  <strong>{money(stats.totalPaid)}</strong>
+                  <div className="stat-footer">
+                    <span className="positive">
+                      <Icon name="trend" size={13} />
+                      Pagos registrados
+                    </span>
+                  </div>
+                </div>
+
+                <div className="stat-card">
+                  <div className="stat-head">
+                    <span>Vencido</span>
+                    <div className="stat-icon red">
+                      <Icon name="calendar" size={18} />
+                    </div>
+                  </div>
+                  <strong>{money(stats.overdue)}</strong>
+                  <div className="stat-footer">
+                    <span className="danger-text">Requiere atención</span>
+                  </div>
+                </div>
+
+                <div className="stat-card">
+                  <div className="stat-head">
+                    <span>Clientes</span>
+                    <div className="stat-icon purple">
+                      <Icon name="users" size={18} />
+                    </div>
+                  </div>
+                  <strong>{clients.length}</strong>
+                  <div className="stat-footer">
+                    <span className="neutral">Clientes registrados</span>
+                  </div>
+                </div>
+              </section>
+
+              <section className="dashboard-grid">
+                <div className="panel large-panel">
+                  <div className="panel-header">
+                    <div>
+                      <h2>Deudas recientes</h2>
+                      <p>Las últimas cuentas registradas.</p>
+                    </div>
+
+                    <button
+                      className="text-button"
+                      onClick={() => navigate("debts")}
+                    >
+                      Ver todas
+                      <Icon name="arrow" size={16} />
+                    </button>
+                  </div>
+
+                  {debtRows.length === 0 ? (
+                    <EmptyState
+                      icon="wallet"
+                      title="Todavía no tienes deudas"
+                      text="Crea tu primera deuda para comenzar a controlar tus cobros."
+                      action={() => setShowDebtModal(true)}
+                    />
+                  ) : (
+                    <DebtTable rows={debtRows.slice(0, 5)} onPay={openPayment} />
+                  )}
+                </div>
+
+                <div className="panel">
+                  <div className="panel-header">
+                    <div>
+                      <h2>Próximos vencimientos</h2>
+                      <p>Deudas pendientes.</p>
+                    </div>
+                  </div>
+
+                  <div className="upcoming-list">
+                    {debtRows
+                      .filter((item) => item.status.className !== "paid")
+                      .sort((a, b) =>
+                        a.dueDate.localeCompare(b.dueDate)
+                      )
+                      .slice(0, 5)
+                      .map((debt) => (
+                        <div className="upcoming-item" key={debt.id}>
+                          <div className="date-box">
+                            <strong>
+                              {new Date(
+                                `${debt.dueDate}T12:00:00`
+                              ).getDate()}
+                            </strong>
+                            <span>
+                              {new Date(
+                                `${debt.dueDate}T12:00:00`
+                              ).toLocaleDateString("es-DO", {
+                                month: "short",
+                              })}
+                            </span>
+                          </div>
+
+                          <div className="upcoming-info">
+                            <strong>{debt.client?.name}</strong>
+                            <span>{debt.concept}</span>
+                          </div>
+
+                          <strong className="upcoming-amount">
+                            {money(debt.balance)}
+                          </strong>
+                        </div>
+                      ))}
+
+                    {debtRows.filter(
+                      (item) => item.status.className !== "paid"
+                    ).length === 0 && (
+                      <div className="simple-empty">
+                        <div className="empty-circle">
+                          <Icon name="check" size={20} />
+                        </div>
+                        <strong>Todo está al día</strong>
+                        <span>No hay vencimientos pendientes.</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </section>
+            </>
+          )}
+
+          {activeView === "clients" && (
+            <section className="page-section">
+              <section className="page-heading">
+                <div>
+                  <div className="eyebrow">GESTIÓN DE CLIENTES</div>
+                  <h1>Clientes</h1>
+                  <p>{pageTitle()[1]}</p>
+                </div>
+
+                <button
+                  className="primary-button"
+                  onClick={() => setShowClientModal(true)}
+                >
+                  <Icon name="plus" size={18} />
+                  Nuevo cliente
+                </button>
+              </section>
+
+              <div className="toolbar">
+                <div className="search-box">
+                  <Icon name="search" size={18} />
+                  <input
+                    value={search}
+                    onChange={(event) => setSearch(event.target.value)}
+                    placeholder="Buscar cliente..."
+                  />
+                </div>
+
+                <span className="results-count">
+                  {filteredClients.length} clientes
+                </span>
+              </div>
+
+              <div className="panel table-panel">
+                {filteredClients.length === 0 ? (
                   <EmptyState
-                    icon="▣"
-                    title="Todavía no tienes deudas"
-                    text="Crea tu primera deuda para comenzar a controlar tus cobros."
-                    button="Crear deuda"
-                    onClick={() => {
-                      if (clients.length === 0) {
-                        setPage("clientes")
-                      } else {
-                        setDebtForm({
-                          ...emptyDebt,
-                          clientId: clients[0].id,
-                        })
-                        setShowDebtModal(true)
-                      }
-                    }}
+                    icon="users"
+                    title="No encontramos clientes"
+                    text="Prueba con otro término de búsqueda."
                   />
                 ) : (
                   <div className="table-wrapper">
                     <table>
                       <thead>
                         <tr>
-                          <th>Cliente</th>
-                          <th>Concepto</th>
-                          <th>Vencimiento</th>
-                          <th>Saldo</th>
-                          <th>Estado</th>
+                          <th>CLIENTE</th>
+                          <th>CONTACTO</th>
+                          <th>DEUDA</th>
+                          <th>ESTADO</th>
+                          <th />
                         </tr>
                       </thead>
+
                       <tbody>
-                        {recentDebts.map((debt) => {
-                          const status = getDebtStatus(debt)
+                        {filteredClients.map((client) => {
+                          const clientDebts = debtRows.filter(
+                            (debt) => debt.clientId === client.id
+                          )
+
+                          const balance = clientDebts.reduce(
+                            (sum, debt) => sum + debt.balance,
+                            0
+                          )
 
                           return (
-                            <tr key={debt.id}>
+                            <tr key={client.id}>
                               <td>
-                                <strong>{clientName(debt.clientId)}</strong>
+                                <div className="client-cell">
+                                  <div className="client-avatar">
+                                    {client.name
+                                      .charAt(0)
+                                      .toUpperCase()}
+                                  </div>
+                                  <div>
+                                    <strong>{client.name}</strong>
+                                    <span>Cliente</span>
+                                  </div>
+                                </div>
                               </td>
-                              <td>{debt.concept}</td>
-                              <td>{formatDate(debt.dueDate)}</td>
-                              <td>{money(getRemaining(debt))}</td>
+
                               <td>
-                                <span className={`badge ${status}`}>
-                                  {statusLabel(status)}
+                                <div className="contact-cell">
+                                  <strong>{client.phone || "—"}</strong>
+                                  <span>{client.email || "Sin correo"}</span>
+                                </div>
+                              </td>
+
+                              <td>
+                                <strong>{money(balance)}</strong>
+                              </td>
+
+                              <td>
+                                <span
+                                  className={`status ${
+                                    balance > 0 ? "pending" : "paid"
+                                  }`}
+                                >
+                                  {balance > 0 ? "Con saldo" : "Al día"}
                                 </span>
+                              </td>
+
+                              <td>
+                                <button className="row-action">
+                                  <Icon name="more" size={18} />
+                                </button>
                               </td>
                             </tr>
                           )
@@ -411,390 +822,241 @@ function App() {
                   </div>
                 )}
               </div>
+            </section>
+          )}
 
-              <div className="panel">
-                <div className="panel-header">
-                  <div>
-                    <h2>Próximos vencimientos</h2>
-                    <p>Deudas pendientes.</p>
-                  </div>
+          {activeView === "debts" && (
+            <section className="page-section">
+              <section className="page-heading">
+                <div>
+                  <div className="eyebrow">CUENTAS POR COBRAR</div>
+                  <h1>Deudas</h1>
+                  <p>{pageTitle()[1]}</p>
                 </div>
 
-                {upcomingDebts.length === 0 ? (
-                  <div className="small-empty">
-                    No hay vencimientos próximos.
-                  </div>
+                <button
+                  className="primary-button"
+                  onClick={() => setShowDebtModal(true)}
+                >
+                  <Icon name="plus" size={18} />
+                  Nueva deuda
+                </button>
+              </section>
+
+              <div className="toolbar">
+                <div className="search-box">
+                  <Icon name="search" size={18} />
+                  <input
+                    value={search}
+                    onChange={(event) => setSearch(event.target.value)}
+                    placeholder="Buscar deuda, cliente..."
+                  />
+                </div>
+
+                <span className="results-count">
+                  {filteredDebts.length} registros
+                </span>
+              </div>
+
+              <div className="panel table-panel">
+                {filteredDebts.length === 0 ? (
+                  <EmptyState
+                    icon="wallet"
+                    title="No hay deudas registradas"
+                    text="Crea una deuda para comenzar."
+                    action={() => setShowDebtModal(true)}
+                  />
                 ) : (
-                  <div className="upcoming-list">
-                    {upcomingDebts.map((debt) => (
-                      <div className="upcoming-item" key={debt.id}>
-                        <div>
-                          <strong>{clientName(debt.clientId)}</strong>
-                          <small>{formatDate(debt.dueDate)}</small>
-                        </div>
-                        <span>{money(getRemaining(debt))}</span>
-                      </div>
-                    ))}
-                  </div>
+                  <DebtTable
+                    rows={filteredDebts}
+                    onPay={openPayment}
+                    detailed
+                  />
                 )}
               </div>
             </section>
-          </>
-        )}
+          )}
 
-        {page === "clientes" && (
-          <>
-            <div className="page-header">
-              <div>
-                <h1>Clientes</h1>
-                <p>Administra las personas que tienen deudas contigo.</p>
-              </div>
-
-              <button
-                className="primary-button"
-                onClick={() => setShowClientModal(true)}
-              >
-                + Nuevo cliente
-              </button>
-            </div>
-
-            <div className="toolbar">
-              <input
-                className="search"
-                placeholder="Buscar cliente..."
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
-              />
-            </div>
-
-            <div className="panel">
-              {filteredClients.length === 0 ? (
-                <EmptyState
-                  icon="♙"
-                  title={
-                    clients.length === 0
-                      ? "Todavía no tienes clientes"
-                      : "No encontramos ese cliente"
-                  }
-                  text={
-                    clients.length === 0
-                      ? "Agrega tu primer cliente para comenzar."
-                      : "Prueba con otro nombre o teléfono."
-                  }
-                  button={clients.length === 0 ? "Agregar cliente" : null}
-                  onClick={() => setShowClientModal(true)}
-                />
-              ) : (
-                <div className="client-grid">
-                  {filteredClients.map((client) => {
-                    const clientDebts = debts.filter(
-                      (debt) => debt.clientId === client.id
-                    )
-
-                    const balance = clientDebts.reduce(
-                      (total, debt) => total + getRemaining(debt),
-                      0
-                    )
-
-                    return (
-                      <div className="client-card" key={client.id}>
-                        <div className="client-card-top">
-                          <div className="client-avatar">
-                            {client.name.charAt(0).toUpperCase()}
-                          </div>
-
-                          <div>
-                            <h3>{client.name}</h3>
-                            <p>{client.phone || "Sin teléfono"}</p>
-                          </div>
-                        </div>
-
-                        <div className="client-info">
-                          <span>Saldo pendiente</span>
-                          <strong>{money(balance)}</strong>
-                        </div>
-
-                        {client.email && (
-                          <div className="client-email">
-                            {client.email}
-                          </div>
-                        )}
-
-                        <button
-                          className="secondary-button full"
-                          onClick={() => {
-                            setDebtForm({
-                              ...emptyDebt,
-                              clientId: client.id,
-                            })
-                            setShowDebtModal(true)
-                          }}
-                        >
-                          + Nueva deuda
-                        </button>
-                      </div>
-                    )
-                  })}
+          {activeView === "payments" && (
+            <section className="page-section">
+              <section className="page-heading">
+                <div>
+                  <div className="eyebrow">MOVIMIENTOS</div>
+                  <h1>Pagos</h1>
+                  <p>{pageTitle()[1]}</p>
                 </div>
-              )}
-            </div>
-          </>
-        )}
+              </section>
 
-        {page === "deudas" && (
-          <>
-            <div className="page-header">
-              <div>
-                <h1>Deudas</h1>
-                <p>Controla todo lo que tus clientes te deben.</p>
-              </div>
-
-              <button
-                className="primary-button"
-                onClick={() => {
-                  if (clients.length === 0) {
-                    setPage("clientes")
-                    return
-                  }
-
-                  setDebtForm({
-                    ...emptyDebt,
-                    clientId: clients[0].id,
-                  })
-                  setShowDebtModal(true)
-                }}
-              >
-                + Nueva deuda
-              </button>
-            </div>
-
-            <div className="panel">
-              {debts.length === 0 ? (
-                <EmptyState
-                  icon="▣"
-                  title="No hay deudas registradas"
-                  text="Cuando registres una deuda aparecerá aquí."
-                  button={clients.length ? "Crear deuda" : "Crear cliente primero"}
-                  onClick={() => {
-                    if (!clients.length) {
-                      setPage("clientes")
-                    } else {
-                      setDebtForm({
-                        ...emptyDebt,
-                        clientId: clients[0].id,
-                      })
-                      setShowDebtModal(true)
-                    }
-                  }}
-                />
-              ) : (
-                <div className="table-wrapper">
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Cliente</th>
-                        <th>Concepto</th>
-                        <th>Total</th>
-                        <th>Pagado</th>
-                        <th>Saldo</th>
-                        <th>Vencimiento</th>
-                        <th>Estado</th>
-                        <th></th>
-                      </tr>
-                    </thead>
-
-                    <tbody>
-                      {debts.map((debt) => {
-                        const paid = getPaid(debt.id)
-                        const remaining = getRemaining(debt)
-                        const status = getDebtStatus(debt)
-
-                        return (
-                          <tr key={debt.id}>
-                            <td>
-                              <strong>{clientName(debt.clientId)}</strong>
-                            </td>
-                            <td>{debt.concept}</td>
-                            <td>{money(debt.amount)}</td>
-                            <td>{money(paid)}</td>
-                            <td>
-                              <strong>{money(remaining)}</strong>
-                            </td>
-                            <td>{formatDate(debt.dueDate)}</td>
-                            <td>
-                              <span className={`badge ${status}`}>
-                                {statusLabel(status)}
-                              </span>
-                            </td>
-                            <td>
-                              {remaining > 0 && (
-                                <button
-                                  className="small-button"
-                                  onClick={() => openPayment(debt)}
-                                >
-                                  Registrar pago
-                                </button>
-                              )}
-                            </td>
-                          </tr>
-                        )
-                      })}
-                    </tbody>
-                  </table>
+              <div className="stats-grid payment-stats">
+                <div className="stat-card">
+                  <div className="stat-head">
+                    <span>Total cobrado</span>
+                    <div className="stat-icon green">
+                      <Icon name="dollar" size={18} />
+                    </div>
+                  </div>
+                  <strong>{money(stats.totalPaid)}</strong>
+                  <div className="stat-footer">
+                    <span className="positive">Pagos registrados</span>
+                  </div>
                 </div>
-              )}
-            </div>
-          </>
-        )}
 
-        {page === "pagos" && (
-          <>
-            <div className="page-header">
-              <div>
-                <h1>Pagos</h1>
-                <p>Historial de pagos registrados.</p>
+                <div className="stat-card">
+                  <div className="stat-head">
+                    <span>Transacciones</span>
+                    <div className="stat-icon blue">
+                      <Icon name="card" size={18} />
+                    </div>
+                  </div>
+                  <strong>{payments.length}</strong>
+                  <div className="stat-footer">
+                    <span className="neutral">Movimientos</span>
+                  </div>
+                </div>
               </div>
-            </div>
 
-            <div className="panel">
-              {payments.length === 0 ? (
-                <EmptyState
-                  icon="✓"
-                  title="Todavía no hay pagos"
-                  text="Los pagos que registres aparecerán aquí."
-                />
-              ) : (
-                <div className="table-wrapper">
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Cliente</th>
-                        <th>Concepto</th>
-                        <th>Fecha</th>
-                        <th>Pago</th>
-                      </tr>
-                    </thead>
+              <div className="panel table-panel">
+                {payments.length === 0 ? (
+                  <EmptyState
+                    icon="card"
+                    title="Todavía no hay pagos"
+                    text="Cuando registres un pago aparecerá aquí."
+                  />
+                ) : (
+                  <div className="table-wrapper">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>CLIENTE</th>
+                          <th>CONCEPTO</th>
+                          <th>MONTO</th>
+                          <th>MÉTODO</th>
+                          <th>FECHA</th>
+                        </tr>
+                      </thead>
 
-                    <tbody>
-                      {[...payments]
-                        .sort(
-                          (a, b) =>
-                            new Date(b.date) - new Date(a.date)
-                        )
-                        .map((payment) => {
+                      <tbody>
+                        {payments.map((payment) => {
                           const debt = debts.find(
                             (item) => item.id === payment.debtId
                           )
 
-                          if (!debt) return null
+                          const client = clients.find(
+                            (item) => item.id === debt?.clientId
+                          )
 
                           return (
                             <tr key={payment.id}>
                               <td>
-                                <strong>
-                                  {clientName(debt.clientId)}
+                                <div className="client-cell">
+                                  <div className="client-avatar">
+                                    {client?.name?.charAt(0) || "K"}
+                                  </div>
+                                  <div>
+                                    <strong>
+                                      {client?.name || "Cliente"}
+                                    </strong>
+                                    <span>Pago recibido</span>
+                                  </div>
+                                </div>
+                              </td>
+
+                              <td>
+                                <strong>{debt?.concept || "—"}</strong>
+                              </td>
+
+                              <td>
+                                <strong className="payment-amount">
+                                  +{money(payment.amount)}
                                 </strong>
                               </td>
-                              <td>{debt.concept}</td>
+
                               <td>
-                                {new Intl.DateTimeFormat("es-DO", {
-                                  day: "2-digit",
-                                  month: "short",
-                                  year: "numeric",
-                                }).format(new Date(payment.date))}
+                                <span className="method-pill">
+                                  {payment.method}
+                                </span>
                               </td>
+
                               <td>
-                                <strong>{money(payment.amount)}</strong>
+                                {new Date(payment.date).toLocaleDateString(
+                                  "es-DO",
+                                  {
+                                    day: "2-digit",
+                                    month: "short",
+                                    year: "numeric",
+                                  }
+                                )}
                               </td>
                             </tr>
                           )
                         })}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
-          </>
-        )}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            </section>
+          )}
+        </div>
       </main>
 
       {showClientModal && (
         <Modal
           title="Nuevo cliente"
+          subtitle="Agrega los datos básicos de tu cliente."
           onClose={() => setShowClientModal(false)}
         >
           <form onSubmit={addClient}>
-            <label>
-              Nombre completo *
-              <input
-                value={clientForm.name}
-                onChange={(event) =>
-                  setClientForm({
-                    ...clientForm,
-                    name: event.target.value,
-                  })
-                }
-                placeholder="Ej. Juan Pérez"
-                autoFocus
-              />
-            </label>
+            <div className="form-grid">
+              <label>
+                Nombre completo
+                <input
+                  autoFocus
+                  value={clientForm.name}
+                  onChange={(event) =>
+                    setClientForm({
+                      ...clientForm,
+                      name: event.target.value,
+                    })
+                  }
+                  placeholder="Ej. Juan Pérez"
+                />
+              </label>
 
-            <label>
-              Teléfono
-              <input
-                value={clientForm.phone}
-                onChange={(event) =>
-                  setClientForm({
-                    ...clientForm,
-                    phone: event.target.value,
-                  })
-                }
-                placeholder="Ej. 809-555-5555"
-              />
-            </label>
+              <label>
+                Teléfono
+                <input
+                  value={clientForm.phone}
+                  onChange={(event) =>
+                    setClientForm({
+                      ...clientForm,
+                      phone: event.target.value,
+                    })
+                  }
+                  placeholder="809-000-0000"
+                />
+              </label>
 
-            <label>
-              Correo electrónico
-              <input
-                type="email"
-                value={clientForm.email}
-                onChange={(event) =>
-                  setClientForm({
-                    ...clientForm,
-                    email: event.target.value,
-                  })
-                }
-                placeholder="cliente@email.com"
-              />
-            </label>
-
-            <label>
-              Nota
-              <textarea
-                value={clientForm.note}
-                onChange={(event) =>
-                  setClientForm({
-                    ...clientForm,
-                    note: event.target.value,
-                  })
-                }
-                placeholder="Información adicional..."
-              />
-            </label>
-
-            <div className="modal-actions">
-              <button
-                type="button"
-                className="secondary-button"
-                onClick={() => setShowClientModal(false)}
-              >
-                Cancelar
-              </button>
-
-              <button type="submit" className="primary-button">
-                Guardar cliente
-              </button>
+              <label className="full">
+                Correo electrónico
+                <input
+                  type="email"
+                  value={clientForm.email}
+                  onChange={(event) =>
+                    setClientForm({
+                      ...clientForm,
+                      email: event.target.value,
+                    })
+                  }
+                  placeholder="cliente@email.com"
+                />
+              </label>
             </div>
+
+            <ModalActions
+              onCancel={() => setShowClientModal(false)}
+              submit="Crear cliente"
+            />
           </form>
         </Modal>
       )}
@@ -802,22 +1064,13 @@ function App() {
       {showDebtModal && (
         <Modal
           title="Nueva deuda"
+          subtitle="Registra una cuenta pendiente de cobro."
           onClose={() => setShowDebtModal(false)}
         >
-          {clients.length === 0 ? (
-            <EmptyState
-              title="Primero necesitas un cliente"
-              text="Crea un cliente antes de registrar una deuda."
-              button="Ir a clientes"
-              onClick={() => {
-                setShowDebtModal(false)
-                setPage("clientes")
-              }}
-            />
-          ) : (
-            <form onSubmit={addDebt}>
-              <label>
-                Cliente *
+          <form onSubmit={addDebt}>
+            <div className="form-grid">
+              <label className="full">
+                Cliente
                 <select
                   value={debtForm.clientId}
                   onChange={(event) =>
@@ -827,16 +1080,23 @@ function App() {
                     })
                   }
                 >
+                  <option value="">Selecciona un cliente</option>
                   {clients.map((client) => (
-                    <option value={client.id} key={client.id}>
+                    <option key={client.id} value={client.id}>
                       {client.name}
                     </option>
                   ))}
                 </select>
+
+                {clients.length === 0 && (
+                  <small className="form-help">
+                    Primero debes crear un cliente.
+                  </small>
+                )}
               </label>
 
-              <label>
-                Concepto *
+              <label className="full">
+                Concepto
                 <input
                   value={debtForm.concept}
                   onChange={(event) =>
@@ -846,25 +1106,27 @@ function App() {
                     })
                   }
                   placeholder="Ej. Compra de mercancía"
-                  autoFocus
                 />
               </label>
 
               <label>
-                Monto *
-                <input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={debtForm.amount}
-                  onChange={(event) =>
-                    setDebtForm({
-                      ...debtForm,
-                      amount: event.target.value,
-                    })
-                  }
-                  placeholder="0.00"
-                />
+                Monto
+                <div className="input-money">
+                  <span>RD$</span>
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={debtForm.amount}
+                    onChange={(event) =>
+                      setDebtForm({
+                        ...debtForm,
+                        amount: event.target.value,
+                      })
+                    }
+                    placeholder="0.00"
+                  />
+                </div>
               </label>
 
               <label>
@@ -880,68 +1142,87 @@ function App() {
                   }
                 />
               </label>
+            </div>
 
-              <div className="modal-actions">
-                <button
-                  type="button"
-                  className="secondary-button"
-                  onClick={() => setShowDebtModal(false)}
-                >
-                  Cancelar
-                </button>
-
-                <button type="submit" className="primary-button">
-                  Guardar deuda
-                </button>
-              </div>
-            </form>
-          )}
+            <ModalActions
+              onCancel={() => setShowDebtModal(false)}
+              submit="Crear deuda"
+            />
+          </form>
         </Modal>
       )}
 
-      {showPaymentModal && paymentDebt && (
+      {showPaymentModal && selectedDebt && (
         <Modal
           title="Registrar pago"
+          subtitle={`Pago para ${selectedDebt.client?.name || "cliente"}.`}
           onClose={() => setShowPaymentModal(false)}
         >
-          <div className="payment-summary">
-            <span>{clientName(paymentDebt.clientId)}</span>
-            <strong>{paymentDebt.concept}</strong>
-            <small>
-              Saldo pendiente: {money(getRemaining(paymentDebt))}
-            </small>
-          </div>
-
-          <form onSubmit={registerPayment}>
-            <label>
-              Monto del pago *
-              <input
-                type="number"
-                min="0.01"
-                max={getRemaining(paymentDebt)}
-                step="0.01"
-                value={paymentAmount}
-                onChange={(event) =>
-                  setPaymentAmount(event.target.value)
-                }
-                placeholder="0.00"
-                autoFocus
-              />
-            </label>
-
-            <div className="modal-actions">
-              <button
-                type="button"
-                className="secondary-button"
-                onClick={() => setShowPaymentModal(false)}
-              >
-                Cancelar
-              </button>
-
-              <button type="submit" className="primary-button">
-                Registrar pago
-              </button>
+          <form onSubmit={addPayment}>
+            <div className="payment-summary">
+              <span>Saldo pendiente</span>
+              <strong>{money(selectedDebt.balance)}</strong>
             </div>
+
+            <div className="form-grid">
+              <label>
+                Monto a pagar
+                <div className="input-money">
+                  <span>RD$</span>
+                  <input
+                    autoFocus
+                    type="number"
+                    min="0.01"
+                    max={selectedDebt.balance}
+                    step="0.01"
+                    value={paymentForm.amount}
+                    onChange={(event) =>
+                      setPaymentForm({
+                        ...paymentForm,
+                        amount: event.target.value,
+                      })
+                    }
+                  />
+                </div>
+              </label>
+
+              <label>
+                Método
+                <select
+                  value={paymentForm.method}
+                  onChange={(event) =>
+                    setPaymentForm({
+                      ...paymentForm,
+                      method: event.target.value,
+                    })
+                  }
+                >
+                  <option>Efectivo</option>
+                  <option>Transferencia</option>
+                  <option>Tarjeta</option>
+                  <option>Otro</option>
+                </select>
+              </label>
+
+              <label className="full">
+                Nota
+                <input
+                  value={paymentForm.note}
+                  onChange={(event) =>
+                    setPaymentForm({
+                      ...paymentForm,
+                      note: event.target.value,
+                    })
+                  }
+                  placeholder="Nota opcional"
+                />
+              </label>
+            </div>
+
+            <ModalActions
+              onCancel={() => setShowPaymentModal(false)}
+              submit="Registrar pago"
+            />
           </form>
         </Modal>
       )}
@@ -949,35 +1230,152 @@ function App() {
   )
 }
 
-function EmptyState({ icon, title, text, button, onClick }) {
+function DebtTable({ rows, onPay, detailed = false }) {
+  return (
+    <div className="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>CLIENTE</th>
+            <th>CONCEPTO</th>
+            <th>MONTO</th>
+            {detailed && <th>VENCIMIENTO</th>}
+            <th>ESTADO</th>
+            <th />
+          </tr>
+        </thead>
+
+        <tbody>
+          {rows.map((debt) => (
+            <tr key={debt.id}>
+              <td>
+                <div className="client-cell">
+                  <div className="client-avatar">
+                    {debt.client?.name?.charAt(0) || "K"}
+                  </div>
+
+                  <div>
+                    <strong>{debt.client?.name || "Cliente"}</strong>
+                    <span>{debt.client?.phone || "Sin teléfono"}</span>
+                  </div>
+                </div>
+              </td>
+
+              <td>
+                <div className="debt-concept">
+                  <strong>{debt.concept}</strong>
+                  <span>Creada recientemente</span>
+                </div>
+              </td>
+
+              <td>
+                <div className="amount-cell">
+                  <strong>{money(debt.balance)}</strong>
+                  {debt.paid > 0 && (
+                    <span>de {money(debt.amount)}</span>
+                  )}
+                </div>
+              </td>
+
+              {detailed && (
+                <td>
+                  <div className="date-cell">
+                    <Icon name="calendar" size={15} />
+                    {new Date(
+                      `${debt.dueDate}T12:00:00`
+                    ).toLocaleDateString("es-DO", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </div>
+                </td>
+              )}
+
+              <td>
+                <span className={`status ${debt.status.className}`}>
+                  <i />
+                  {debt.status.label}
+                </span>
+              </td>
+
+              <td>
+                {debt.balance > 0 ? (
+                  <button
+                    className="small-pay-button"
+                    onClick={() => onPay(debt)}
+                  >
+                    Cobrar
+                  </button>
+                ) : (
+                  <div className="completed-check">
+                    <Icon name="check" size={15} />
+                  </div>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
+function EmptyState({ icon, title, text, action }) {
   return (
     <div className="empty-state">
-      {icon && <div className="empty-icon">{icon}</div>}
-      <h3>{title}</h3>
+      <div className="empty-icon">
+        <Icon name={icon} size={23} />
+      </div>
+
+      <strong>{title}</strong>
       <p>{text}</p>
 
-      {button && (
-        <button className="primary-button" onClick={onClick}>
-          {button}
+      {action && (
+        <button className="primary-button small" onClick={action}>
+          <Icon name="plus" size={16} />
+          Crear deuda
         </button>
       )}
     </div>
   )
 }
 
-function Modal({ title, onClose, children }) {
+function Modal({ title, subtitle, onClose, children }) {
   return (
     <div className="modal-backdrop" onMouseDown={onClose}>
       <div className="modal" onMouseDown={(event) => event.stopPropagation()}>
         <div className="modal-header">
-          <h2>{title}</h2>
-          <button className="close-button" onClick={onClose}>
-            ×
+          <div>
+            <h2>{title}</h2>
+            <p>{subtitle}</p>
+          </div>
+
+          <button className="modal-close" onClick={onClose}>
+            <Icon name="close" size={19} />
           </button>
         </div>
 
         {children}
       </div>
+    </div>
+  )
+}
+
+function ModalActions({ onCancel, submit }) {
+  return (
+    <div className="modal-actions">
+      <button
+        type="button"
+        className="secondary-button"
+        onClick={onCancel}
+      >
+        Cancelar
+      </button>
+
+      <button type="submit" className="primary-button">
+        {submit}
+      </button>
     </div>
   )
 }
