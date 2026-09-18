@@ -128,7 +128,6 @@ select:focus-visible {
   display: grid;
   place-items: center;
   background: #ffffff;
-  color: var(--navy);
   border-radius: 12px;
   box-shadow:
     0 8px 24px rgba(0, 0, 0, 0.16),
@@ -138,8 +137,8 @@ select:focus-visible {
 }
 
 .brand-mark svg {
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   display: block;
 }
 
