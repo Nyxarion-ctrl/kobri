@@ -123,25 +123,32 @@ select:focus-visible {
 }
 
 .brand-mark {
-  width: 35px;
-  height: 35px;
+  width: 42px;
+  height: 42px;
   display: grid;
   place-items: center;
-  background: #fff;
+  background: #ffffff;
   color: var(--navy);
-  border-radius: 10px;
-  box-shadow: 0 5px 16px rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.16),
+    0 2px 6px rgba(65, 105, 255, 0.12);
+  flex-shrink: 0;
+  overflow: hidden;
 }
 
 .brand-mark svg {
-  width: 26px;
-  height: 26px;
+  width: 34px;
+  height: 34px;
+  display: block;
 }
 
 .brand > span {
-  font-size: 20px;
-  font-weight: 800;
-  letter-spacing: -0.7px;
+  font-size: 21px;
+  font-weight: 850;
+  letter-spacing: -0.9px;
+  line-height: 1;
+  color: #ffffff;
 }
 
 .workspace {
