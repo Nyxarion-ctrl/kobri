@@ -57,53 +57,58 @@ function Logo({ collapsed = false }) {
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
         >
-          {/* Base del símbolo */}
+          {/* Fondo */}
           <rect
-            x="3"
-            y="3"
-            width="58"
-            height="58"
-            rx="15"
-            fill="#071329"
-          />
-
-          {/* K blanca */}
-          <path
-            d="M18 14
-               H25
-               V28
-               L39 14
-               H48
-               L32 30
-               L49 50
-               H39
-               L25 34
-               V50
-               H18
-               Z"
+            x="2"
+            y="2"
+            width="60"
+            height="60"
+            rx="16"
             fill="#FFFFFF"
           />
 
-          {/* Diagonal azul / sensación de avance */}
+          {/* K principal */}
           <path
-            d="M31 28
-               L43 16
-               H51
-               L36 31
-               Z"
+            d="
+              M17 13
+              H25
+              V27
+              L39 13
+              H50
+              L34 29
+              L51 51
+              H40
+              L26 34
+              L25 35
+              V51
+              H17
+              Z
+            "
+            fill="#071329"
+          />
+
+          {/* Acento azul integrado en la diagonal */}
+          <path
+            d="
+              M28 29
+              L41 16
+              H50
+              L34 32
+              Z
+            "
             fill="#4169FF"
           />
 
-          {/* Check azul integrado */}
+          {/* Unión inferior azul */}
           <path
-            d="M31 39
-               L35 43
-               L47 31"
-            fill="none"
-            stroke="#4169FF"
-            strokeWidth="4"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            d="
+              M30 36
+              L39 27
+              L45 33
+              L36 42
+              Z
+            "
+            fill="#4169FF"
           />
         </svg>
       </div>
