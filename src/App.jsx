@@ -50,27 +50,67 @@ function Logo({ collapsed = false }) {
   return (
     <div className={`brand ${collapsed ? "brand-small" : ""}`}>
       <div className="brand-mark">
-        <svg viewBox="0 0 48 48" aria-hidden="true">
-          <path
-            d="M10 8v32c0 2.2 1.8 4 4 4h3V27l14 13c1.7 1.6 4.3 1.5 5.9-.2l.7-.8-13-12 13.3-12.3c1.7-1.6 1.8-4.2.2-5.9l-.8-.8L17 24V8h-3c-2.2 0-4 1.8-4 4Z"
-            fill="currentColor"
+        <svg
+          viewBox="0 0 64 64"
+          width="34"
+          height="34"
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          {/* Base del símbolo */}
+          <rect
+            x="3"
+            y="3"
+            width="58"
+            height="58"
+            rx="15"
+            fill="#071329"
           />
+
+          {/* K blanca */}
           <path
-            d="M18 25 31.5 12h7L25 25h-7Z"
-            fill="#4169ff"
+            d="M18 14
+               H25
+               V28
+               L39 14
+               H48
+               L32 30
+               L49 50
+               H39
+               L25 34
+               V50
+               H18
+               Z"
+            fill="#FFFFFF"
           />
+
+          {/* Diagonal azul / sensación de avance */}
           <path
-            d="m18 32 4 4 5-5"
+            d="M31 28
+               L43 16
+               H51
+               L36 31
+               Z"
+            fill="#4169FF"
+          />
+
+          {/* Check azul integrado */}
+          <path
+            d="M31 39
+               L35 43
+               L47 31"
             fill="none"
-            stroke="#4169ff"
-            strokeWidth="3.5"
+            stroke="#4169FF"
+            strokeWidth="4"
             strokeLinecap="round"
             strokeLinejoin="round"
           />
         </svg>
       </div>
 
-      {!collapsed && <span>KOBRI</span>}
+      {!collapsed && (
+        <span>KOBRI</span>
+      )}
     </div>
   )
 }
