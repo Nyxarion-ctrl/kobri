@@ -48,73 +48,29 @@ const initialDebts = [
 
 function Logo({ collapsed = false }) {
   return (
-    <div className={`brand ${collapsed ? "brand-small" : ""}`}>
+    <div className={`brand ${collapsed ? "brand-small" : ""}`} aria-label="Kobri">
       <div className="brand-mark">
-        <svg
-          viewBox="0 0 64 64"
-          width="34"
-          height="34"
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          {/* Fondo */}
-          <rect
-            x="2"
-            y="2"
-            width="60"
-            height="60"
-            rx="16"
-            fill="#FFFFFF"
-          />
-
-          {/* K principal */}
+        <svg viewBox="0 0 64 64" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="2" width="60" height="60" rx="16" fill="#FFFFFF" />
           <path
-            d="
-              M17 13
-              H25
-              V27
-              L39 13
-              H50
-              L34 29
-              L51 51
-              H40
-              L26 34
-              L25 35
-              V51
-              H17
-              Z
-            "
-            fill="#071329"
+            d="M18 13H27V27.5L40.5 13H51L35.1 30L51.5 51H40L27 34.6V51H18V13Z"
+            fill="#0B1324"
           />
-
-          {/* Acento azul integrado en la diagonal */}
           <path
-            d="
-              M28 29
-              L41 16
-              H50
-              L34 32
-              Z
-            "
+            d="M29.4 29.7L42.8 16.2H51L35.4 32.2L29.4 29.7Z"
             fill="#4169FF"
           />
-
-          {/* Unión inferior azul */}
           <path
-            d="
-              M30 36
-              L39 27
-              L45 33
-              L36 42
-              Z
-            "
+            d="M39.2 39.8L45.4 33.6L51.2 40.1L45 46.4L39.2 39.8Z"
             fill="#4169FF"
           />
         </svg>
       </div>
-
       {!collapsed && (
-        <span>KOBRI</span>
+        <div className="brand-copy">
+          <span>KOBRI</span>
+          <small>COBRANZAS · CONTROL</small>
+        </div>
       )}
     </div>
   )
@@ -257,12 +213,15 @@ function App() {
   const [showNotifications, setShowNotifications] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
   const [showAccount, setShowAccount] = useState(false)
+  const [showPlans, setShowPlans] = useState(false)
   const [showClientDetail, setShowClientDetail] = useState(false)
   const [showDebtDetail, setShowDebtDetail] = useState(false)
   const [selectedDebt, setSelectedDebt] = useState(null)
   const [selectedClient, setSelectedClient] = useState(null)
   const [selectedDebtDetail, setSelectedDebtDetail] = useState(null)
   const [search, setSearch] = useState("")
+
+  const [currentPlan, setCurrentPlan] = useState(() => localStorage.getItem("kobri_plan") || "Gratis")
 
   const [businessSettings, setBusinessSettings] = useState(() => {
     const saved = localStorage.getItem("kobri_settings")
@@ -330,6 +289,10 @@ function App() {
   useEffect(() => {
     localStorage.setItem("kobri_settings", JSON.stringify(businessSettings))
   }, [businessSettings])
+
+  useEffect(() => {
+    localStorage.setItem("kobri_plan", currentPlan)
+  }, [currentPlan])
 
   useEffect(() => {
     localStorage.setItem(
@@ -609,14 +572,23 @@ function App() {
           </button>
         </div>
 
-        <div className="workspace">
+        <button
+          className="workspace workspace-button"
+          onClick={() => {
+            setShowAccount(true)
+            setShowNotifications(false)
+            setShowSettings(false)
+            setShowPlans(false)
+          }}
+          title="Abrir mi cuenta"
+        >
           <div className="workspace-avatar">K</div>
           <div>
             <strong>{businessSettings.businessName}</strong>
-            <span>Cuenta gratuita</span>
+            <span>Plan {currentPlan}</span>
           </div>
-          <Icon name="more" size={18} />
-        </div>
+          <Icon name="arrow" size={16} />
+        </button>
 
         <nav className="navigation">
           <div className="nav-label">GESTIÓN</div>
@@ -671,17 +643,7 @@ function App() {
             </div>
           </div>
 
-          <button
-            className="profile-mini profile-mini-button"
-            onClick={() => setShowAccount(true)}
-          >
-            <div className="profile-avatar">K</div>
-            <div>
-              <strong>{businessSettings.businessName}</strong>
-              <span>Plan gratuito</span>
-            </div>
-            <Icon name="more" size={18} />
-          </button>
+
         </div>
       </aside>
 
@@ -708,8 +670,10 @@ function App() {
                 setShowNotifications((current) => !current)
                 setShowSettings(false)
                 setShowAccount(false)
+                setShowPlans(false)
               }}
               aria-label="Notificaciones"
+              title="Notificaciones"
             >
               <Icon name="bell" size={19} />
               {unreadNotifications > 0 && (
@@ -723,8 +687,10 @@ function App() {
                 setShowSettings(true)
                 setShowNotifications(false)
                 setShowAccount(false)
+                setShowPlans(false)
               }}
               aria-label="Configuración"
+              title="Configuración"
             >
               <Icon name="settings" size={19} />
             </button>
@@ -735,7 +701,9 @@ function App() {
                 setShowAccount(true)
                 setShowNotifications(false)
                 setShowSettings(false)
+                setShowPlans(false)
               }}
+              title="Mi cuenta"
             >
               <div className="top-avatar">K</div>
               <div className="top-profile-text">
@@ -1691,7 +1659,7 @@ function App() {
           <div className="detail-grid">
             <div>
               <span>Plan</span>
-              <strong>Gratis</strong>
+              <strong>{currentPlan}</strong>
             </div>
             <div>
               <span>Moneda</span>
@@ -1707,7 +1675,7 @@ function App() {
             </div>
           </div>
 
-          <div className="detail-actions">
+          <div className="account-actions">
             <button
               className="secondary-button"
               onClick={() => {
@@ -1717,7 +1685,58 @@ function App() {
             >
               Editar configuración
             </button>
+            <button
+              className="primary-button"
+              onClick={() => {
+                setShowAccount(false)
+                setShowPlans(true)
+              }}
+            >
+              Ver planes
+            </button>
           </div>
+        </Modal>
+      )}
+
+      {showPlans && (
+        <Modal
+          title="Planes de Kobri"
+          subtitle="Elige el nivel que mejor se adapte a tu negocio."
+          onClose={() => setShowPlans(false)}
+        >
+          <div className="plans-grid">
+            {[
+              { name: "Gratis", price: "RD$0", note: "Para empezar", features: ["Hasta 20 clientes", "Control de deudas", "Registro de pagos"] },
+              { name: "Pro", price: "RD$299", note: "Para negocios en crecimiento", features: ["Clientes ilimitados", "Recordatorios", "Reportes y métricas"] },
+              { name: "Negocio", price: "RD$599", note: "Para equipos", features: ["Todo lo de Pro", "Usuarios y permisos", "Funciones avanzadas"] },
+            ].map((plan) => (
+              <div className={`plan-card ${currentPlan === plan.name ? "selected" : ""}`} key={plan.name}>
+                {currentPlan === plan.name && <span className="plan-current">ACTUAL</span>}
+                <div className="plan-card-top">
+                  <div>
+                    <strong>{plan.name}</strong>
+                    <span>{plan.note}</span>
+                  </div>
+                  <b>{plan.price}<small>/mes</small></b>
+                </div>
+                <ul>
+                  {plan.features.map((feature) => (
+                    <li key={feature}><Icon name="check" size={14} />{feature}</li>
+                  ))}
+                </ul>
+                <button
+                  className={currentPlan === plan.name ? "secondary-button" : "primary-button"}
+                  onClick={() => {
+                    setCurrentPlan(plan.name)
+                    setShowPlans(false)
+                  }}
+                >
+                  {currentPlan === plan.name ? "Plan actual" : `Elegir ${plan.name}`}
+                </button>
+              </div>
+            ))}
+          </div>
+          <p className="plans-note">La selección del plan es visual por ahora. Conectaremos el cobro real cuando integremos suscripciones y pagos.</p>
         </Modal>
       )}
     </div>
