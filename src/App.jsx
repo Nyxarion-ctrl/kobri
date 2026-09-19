@@ -183,8 +183,8 @@ function Icon({ name, size = 20 }) {
     ),
     settings: (
       <>
-        <circle cx="12" cy="12" r="3" />
-        <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-1.8 1.8-.06-.06a1.7 1.7 0 0 0-1.88-.34 1.7 1.7 0 0 0-1.03 1.56V22h-2.54v-.1a1.7 1.7 0 0 0-1.03-1.56 1.7 1.7 0 0 0-1.88.34l-.06.06-1.8-1.8.06-.06A1.7 1.7 0 0 0 8.12 17a1.7 1.7 0 0 0-1.56-1.03H6.5v-2.54h.06A1.7 1.7 0 0 0 8.12 12a1.7 1.7 0 0 0-.34-1.88l-.06-.06 1.8-1.8.06.06a1.7 1.7 0 0 0 1.88.34 1.7 1.7 0 0 0 1.03-1.56V5h2.54v.1a1.7 1.7 0 0 0 1.03 1.56 1.7 1.7 0 0 0 1.88-.34l.06-.06 1.8 1.8-.06.06A1.7 1.7 0 0 0 19.4 10c.2.62.78 1.03 1.43 1.03h.07v2.54h-.07A1.7 1.7 0 0 0 19.4 15Z" />
+        <path d="M12 8.2a3.8 3.8 0 1 0 0 7.6 3.8 3.8 0 0 0 0-7.6Z" />
+        <path d="M19.2 13.1a1.8 1.8 0 0 0 0-2.2l1.1-1.3-1.9-1.9-1.4 1.1a1.8 1.8 0 0 0-2.1-.9L14.5 6h-5l-.4 1.9a1.8 1.8 0 0 0-2.1.9L5.6 7.7 3.7 9.6l1.1 1.3a1.8 1.8 0 0 0 0 2.2l-1.1 1.3 1.9 1.9 1.4-1.1a1.8 1.8 0 0 0 2.1.9l.4 1.9h5l.4-1.9a1.8 1.8 0 0 0 2.1-.9l1.4 1.1 1.9-1.9-1.1-1.3Z" />
       </>
     ),
   }
@@ -1746,7 +1746,7 @@ function App() {
 function DebtTable({ rows, onPay, onDetails, detailed = false }) {
   return (
     <div className="table-wrapper">
-      <table>
+      <table className={`data-table ${detailed ? "detailed-table" : "compact-table"}`}>
         <thead>
           <tr>
             <th>CLIENTE</th>
@@ -1762,12 +1762,11 @@ function DebtTable({ rows, onPay, onDetails, detailed = false }) {
           {rows.map((debt) => (
             <tr key={debt.id}>
               <td>
-                <div className="client-cell">
+                <div className="client-cell client-identity">
                   <div className="client-avatar">
                     {debt.client?.name?.charAt(0) || "K"}
                   </div>
-
-                  <div>
+                  <div className="client-copy">
                     <strong>{debt.client?.name || "Cliente"}</strong>
                     <span>{debt.client?.phone || "Sin teléfono"}</span>
                   </div>
@@ -1780,8 +1779,8 @@ function DebtTable({ rows, onPay, onDetails, detailed = false }) {
                   onClick={() => onDetails?.(debt)}
                   aria-label={`Ver detalle de ${debt.concept}`}
                 >
-                  <strong>{debt.concept}</strong>
-                  <span>Ver detalle</span>
+                  <span className="concept-name">{debt.concept}</span>
+                  <span className="concept-detail">Ver detalle de la deuda</span>
                 </button>
               </td>
 
