@@ -32,8 +32,8 @@
   --border: #e7eaf0;
   --border-dark: #dfe3ea;
 
-  --surface: #ffffff;
-  --surface-soft: #f8f9fc;
+ --surface: #f7f8fb;
+--surface-soft: #f1f3f7;
 
   --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.04);
   --shadow-md: 0 8px 24px rgba(16, 24, 40, 0.06);
