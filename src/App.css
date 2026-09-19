@@ -1999,3 +1999,170 @@ table tbody tr:hover {
     width: 100%;
   }
 }
+
+/* =========================================================
+   FINAL POLISH — TABLAS + ICONO DE CONFIGURACIÓN
+   ========================================================= */
+
+/* La tabla deja de repartir las columnas con espacios exagerados. */
+.data-table {
+  table-layout: fixed;
+  min-width: 0;
+}
+
+.data-table th,
+.data-table td {
+  overflow: hidden;
+}
+
+.data-table th:nth-child(1),
+.data-table td:nth-child(1) {
+  width: 29%;
+}
+
+.data-table th:nth-child(2),
+.data-table td:nth-child(2) {
+  width: 30%;
+}
+
+.data-table th:nth-child(3),
+.data-table td:nth-child(3) {
+  width: 17%;
+}
+
+.data-table th:nth-child(4),
+.data-table td:nth-child(4) {
+  width: 15%;
+}
+
+.data-table th:nth-child(5),
+.data-table td:nth-child(5) {
+  width: 9%;
+}
+
+.detailed-table {
+  min-width: 790px;
+  table-layout: auto;
+}
+
+.detailed-table th:nth-child(1),
+.detailed-table td:nth-child(1) {
+  min-width: 185px;
+}
+
+.detailed-table th:nth-child(2),
+.detailed-table td:nth-child(2) {
+  min-width: 190px;
+}
+
+.client-identity {
+  min-width: 0;
+  gap: 9px;
+}
+
+.client-copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px;
+}
+
+.client-copy strong,
+.client-copy span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.debt-concept-button {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 4px;
+  padding: 2px 0;
+}
+
+.debt-concept .concept-name {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--navy);
+  font-size: 10px;
+  line-height: 1.25;
+  font-weight: 750;
+}
+
+.debt-concept .concept-detail {
+  display: inline-flex;
+  align-items: center;
+  color: var(--blue);
+  font-size: 8px;
+  line-height: 1.2;
+  font-weight: 700;
+  opacity: 0.9;
+}
+
+.debt-concept-button:hover .concept-detail {
+  text-decoration: underline;
+  opacity: 1;
+}
+
+/* El botón de configuración queda visualmente equilibrado con la campana. */
+.topbar-actions .icon-button {
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+}
+
+.topbar-actions .icon-button svg {
+  width: 18px;
+  height: 18px;
+  stroke-width: 1.65;
+}
+
+.topbar-actions .icon-button:not(.notification) {
+  color: #59677e;
+  background: #f8fafc;
+}
+
+.topbar-actions .icon-button:not(.notification):hover {
+  color: var(--navy);
+  background: #ffffff;
+  border-color: #c7d0dd;
+  box-shadow: 0 5px 14px rgba(16, 24, 40, 0.08);
+}
+
+.topbar-actions .notification {
+  color: #526078;
+}
+
+.topbar-actions .notification:hover {
+  color: var(--navy);
+}
+
+/* Mantiene la fecha de vencimiento centrada y limpia. */
+.date-box strong,
+.date-box span {
+  text-align: center !important;
+  justify-content: center !important;
+  align-self: center !important;
+}
+
+@media (max-width: 900px) {
+  .data-table {
+    min-width: 690px;
+    table-layout: auto;
+  }
+
+  .compact-table {
+    min-width: 690px;
+  }
+}
