@@ -225,6 +225,12 @@ function Icon({ name, size = 20 }) {
         <path d="M4 6h16M4 12h16M4 18h16" />
       </>
     ),
+    settings: (
+      <>
+        <circle cx="12" cy="12" r="3" />
+        <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-1.8 1.8-.06-.06a1.7 1.7 0 0 0-1.88-.34 1.7 1.7 0 0 0-1.03 1.56V22h-2.54v-.1a1.7 1.7 0 0 0-1.03-1.56 1.7 1.7 0 0 0-1.88.34l-.06.06-1.8-1.8.06-.06A1.7 1.7 0 0 0 8.12 17a1.7 1.7 0 0 0-1.56-1.03H6.5v-2.54h.06A1.7 1.7 0 0 0 8.12 12a1.7 1.7 0 0 0-.34-1.88l-.06-.06 1.8-1.8.06.06a1.7 1.7 0 0 0 1.88.34 1.7 1.7 0 0 0 1.03-1.56V5h2.54v.1a1.7 1.7 0 0 0 1.03 1.56 1.7 1.7 0 0 0 1.88-.34l.06-.06 1.8 1.8-.06.06A1.7 1.7 0 0 0 19.4 10c.2.62.78 1.03 1.43 1.03h.07v2.54h-.07A1.7 1.7 0 0 0 19.4 15Z" />
+      </>
+    ),
   }
 
   return <svg {...common}>{icons[name] || icons.more}</svg>
@@ -248,8 +254,32 @@ function App() {
   const [showDebtModal, setShowDebtModal] = useState(false)
   const [showClientModal, setShowClientModal] = useState(false)
   const [showPaymentModal, setShowPaymentModal] = useState(false)
+  const [showNotifications, setShowNotifications] = useState(false)
+  const [showSettings, setShowSettings] = useState(false)
+  const [showAccount, setShowAccount] = useState(false)
+  const [showClientDetail, setShowClientDetail] = useState(false)
+  const [showDebtDetail, setShowDebtDetail] = useState(false)
   const [selectedDebt, setSelectedDebt] = useState(null)
+  const [selectedClient, setSelectedClient] = useState(null)
+  const [selectedDebtDetail, setSelectedDebtDetail] = useState(null)
   const [search, setSearch] = useState("")
+
+  const [businessSettings, setBusinessSettings] = useState(() => {
+    const saved = localStorage.getItem("kobri_settings")
+    return saved
+      ? JSON.parse(saved)
+      : {
+          businessName: "Mi negocio",
+          phone: "",
+          currency: "DOP",
+          notifications: true,
+        }
+  })
+
+  const [readNotifications, setReadNotifications] = useState(() => {
+    const saved = localStorage.getItem("kobri_read_notifications")
+    return saved ? JSON.parse(saved) : []
+  })
 
   const [clients, setClients] = useState(() => {
     const saved = localStorage.getItem("kobri_clients")
@@ -296,6 +326,17 @@ function App() {
   useEffect(() => {
     localStorage.setItem("kobri_payments", JSON.stringify(payments))
   }, [payments])
+
+  useEffect(() => {
+    localStorage.setItem("kobri_settings", JSON.stringify(businessSettings))
+  }, [businessSettings])
+
+  useEffect(() => {
+    localStorage.setItem(
+      "kobri_read_notifications",
+      JSON.stringify(readNotifications)
+    )
+  }, [readNotifications])
 
   const paidForDebt = (debtId) =>
     payments
@@ -349,10 +390,99 @@ function App() {
       .includes(search.toLowerCase())
   )
 
+  const notifications = useMemo(() => {
+    if (!businessSettings.notifications) return []
+
+    const items = []
+
+    debtRows
+      .filter((debt) => debt.status.className === "overdue")
+      .slice(0, 5)
+      .forEach((debt) => {
+        items.push({
+          id: `overdue-${debt.id}`,
+          type: "overdue",
+          title: "Deuda vencida",
+          text: `${debt.client?.name || "Cliente"} tiene ${money(
+            debt.balance
+          )} pendiente.`,
+        })
+      })
+
+    debtRows
+      .filter((debt) => {
+        if (debt.status.className === "paid") return false
+        const due = new Date(`${debt.dueDate}T12:00:00`)
+        const now = new Date()
+        const diff = Math.ceil((due - now) / (1000 * 60 * 60 * 24))
+        return diff >= 0 && diff <= 3
+      })
+      .slice(0, 5)
+      .forEach((debt) => {
+        items.push({
+          id: `upcoming-${debt.id}`,
+          type: "upcoming",
+          title: "Vencimiento próximo",
+          text: `${debt.client?.name || "Cliente"} vence el ${new Date(
+            `${debt.dueDate}T12:00:00`
+          ).toLocaleDateString("es-DO", { day: "2-digit", month: "short" })}.`,
+        })
+      })
+
+    payments.slice(0, 5).forEach((payment) => {
+      const debt = debts.find((item) => item.id === payment.debtId)
+      const client = clients.find((item) => item.id === debt?.clientId)
+
+      items.push({
+        id: `payment-${payment.id}`,
+        type: "payment",
+        title: "Pago registrado",
+        text: `${client?.name || "Cliente"} pagó ${money(payment.amount)}.`,
+      })
+    })
+
+    return items.slice(0, 10)
+  }, [
+    debtRows,
+    payments,
+    debts,
+    clients,
+    businessSettings.notifications,
+  ])
+
+  const unreadNotifications = notifications.filter(
+    (item) => !readNotifications.includes(item.id)
+  ).length
+
   function navigate(view) {
     setActiveView(view)
     setSearch("")
     setSidebarOpen(false)
+  }
+
+  function openClientDetail(client) {
+    setSelectedClient(client)
+    setShowClientDetail(true)
+  }
+
+  function openDebtDetail(debt) {
+    setSelectedDebtDetail(debt)
+    setShowDebtDetail(true)
+  }
+
+  function markNotificationsAsRead() {
+    setReadNotifications(notifications.map((item) => item.id))
+  }
+
+  function markNotificationAsRead(id) {
+    setReadNotifications((current) =>
+      current.includes(id) ? current : [...current, id]
+    )
+  }
+
+  function saveBusinessSettings(event) {
+    event.preventDefault()
+    setShowSettings(false)
   }
 
   function addClient(event) {
@@ -482,7 +612,7 @@ function App() {
         <div className="workspace">
           <div className="workspace-avatar">K</div>
           <div>
-            <strong>Mi negocio</strong>
+            <strong>{businessSettings.businessName}</strong>
             <span>Cuenta gratuita</span>
           </div>
           <Icon name="more" size={18} />
@@ -541,14 +671,17 @@ function App() {
             </div>
           </div>
 
-          <div className="profile-mini">
+          <button
+            className="profile-mini profile-mini-button"
+            onClick={() => setShowAccount(true)}
+          >
             <div className="profile-avatar">K</div>
             <div>
-              <strong>Mi cuenta</strong>
+              <strong>{businessSettings.businessName}</strong>
               <span>Plan gratuito</span>
             </div>
             <Icon name="more" size={18} />
-          </div>
+          </button>
         </div>
       </aside>
 
@@ -569,18 +702,93 @@ function App() {
           </div>
 
           <div className="topbar-actions">
-            <button className="icon-button notification">
+            <button
+              className="icon-button notification"
+              onClick={() => {
+                setShowNotifications((current) => !current)
+                setShowSettings(false)
+                setShowAccount(false)
+              }}
+              aria-label="Notificaciones"
+            >
               <Icon name="bell" size={19} />
-              <i />
+              {unreadNotifications > 0 && (
+                <i>{unreadNotifications > 9 ? "9+" : unreadNotifications}</i>
+              )}
             </button>
 
-            <div className="top-profile">
+            <button
+              className="icon-button"
+              onClick={() => {
+                setShowSettings(true)
+                setShowNotifications(false)
+                setShowAccount(false)
+              }}
+              aria-label="Configuración"
+            >
+              <Icon name="settings" size={19} />
+            </button>
+
+            <button
+              className="top-profile top-profile-button"
+              onClick={() => {
+                setShowAccount(true)
+                setShowNotifications(false)
+                setShowSettings(false)
+              }}
+            >
               <div className="top-avatar">K</div>
               <div className="top-profile-text">
-                <strong>Mi negocio</strong>
+                <strong>{businessSettings.businessName}</strong>
                 <span>Administrador</span>
               </div>
-            </div>
+            </button>
+
+            {showNotifications && (
+              <div className="notification-panel">
+                <div className="notification-header">
+                  <div>
+                    <strong>Notificaciones</strong>
+                    <span>
+                      {unreadNotifications > 0
+                        ? `${unreadNotifications} sin leer`
+                        : "Todo leído"}
+                    </span>
+                  </div>
+                  {unreadNotifications > 0 && (
+                    <button onClick={markNotificationsAsRead}>
+                      Marcar todas
+                    </button>
+                  )}
+                </div>
+
+                <div className="notification-list">
+                  {notifications.length === 0 ? (
+                    <div className="notification-empty">
+                      <Icon name="check" size={20} />
+                      <strong>No tienes notificaciones</strong>
+                      <span>Todo está al día.</span>
+                    </div>
+                  ) : (
+                    notifications.map((item) => (
+                      <button
+                        className={`notification-item ${
+                          readNotifications.includes(item.id) ? "read" : "unread"
+                        }`}
+                        key={item.id}
+                        onClick={() => markNotificationAsRead(item.id)}
+                      >
+                        <div className={`notification-dot ${item.type}`} />
+                        <div>
+                          <strong>{item.title}</strong>
+                          <span>{item.text}</span>
+                        </div>
+                      </button>
+                    ))
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </header>
 
@@ -689,7 +897,11 @@ function App() {
                       action={() => setShowDebtModal(true)}
                     />
                   ) : (
-                    <DebtTable rows={debtRows.slice(0, 5)} onPay={openPayment} />
+                    <DebtTable
+                      rows={debtRows.slice(0, 5)}
+                      onPay={openPayment}
+                      onDetails={openDebtDetail}
+                    />
                   )}
                 </div>
 
@@ -855,8 +1067,12 @@ function App() {
                               </td>
 
                               <td>
-                                <button className="row-action">
-                                  <Icon name="more" size={18} />
+                                <button
+                                  className="row-action"
+                                  onClick={() => openClientDetail(client)}
+                                  aria-label={`Ver ${client.name}`}
+                                >
+                                  <Icon name="arrow" size={17} />
                                 </button>
                               </td>
                             </tr>
@@ -915,6 +1131,7 @@ function App() {
                   <DebtTable
                     rows={filteredDebts}
                     onPay={openPayment}
+                    onDetails={openDebtDetail}
                     detailed
                   />
                 )}
@@ -1271,11 +1488,243 @@ function App() {
           </form>
         </Modal>
       )}
+
+      {showClientDetail && selectedClient && (
+        <Modal
+          title={selectedClient.name}
+          subtitle="Información y situación de este cliente."
+          onClose={() => {
+            setShowClientDetail(false)
+            setSelectedClient(null)
+          }}
+        >
+          <div className="detail-card">
+            <div className="detail-avatar">
+              {selectedClient.name.charAt(0).toUpperCase()}
+            </div>
+            <div>
+              <strong>{selectedClient.name}</strong>
+              <span>{selectedClient.phone || "Sin teléfono"}</span>
+              <span>{selectedClient.email || "Sin correo electrónico"}</span>
+            </div>
+          </div>
+
+          <div className="detail-grid">
+            <div>
+              <span>Saldo pendiente</span>
+              <strong>
+                {money(
+                  debtRows
+                    .filter((debt) => debt.clientId === selectedClient.id)
+                    .reduce((sum, debt) => sum + debt.balance, 0)
+                )}
+              </strong>
+            </div>
+            <div>
+              <span>Deudas</span>
+              <strong>
+                {debtRows.filter((debt) => debt.clientId === selectedClient.id).length}
+              </strong>
+            </div>
+          </div>
+
+          <div className="detail-actions">
+            <button
+              className="primary-button"
+              onClick={() => {
+                setShowClientDetail(false)
+                setDebtForm((current) => ({
+                  ...current,
+                  clientId: String(selectedClient.id),
+                }))
+                setShowDebtModal(true)
+              }}
+            >
+              <Icon name="plus" size={17} />
+              Nueva deuda
+            </button>
+          </div>
+        </Modal>
+      )}
+
+      {showDebtDetail && selectedDebtDetail && (
+        <Modal
+          title={selectedDebtDetail.concept}
+          subtitle={`Deuda de ${selectedDebtDetail.client?.name || "cliente"}.`}
+          onClose={() => {
+            setShowDebtDetail(false)
+            setSelectedDebtDetail(null)
+          }}
+        >
+          <div className="detail-grid">
+            <div>
+              <span>Monto original</span>
+              <strong>{money(selectedDebtDetail.amount)}</strong>
+            </div>
+            <div>
+              <span>Saldo pendiente</span>
+              <strong>{money(selectedDebtDetail.balance)}</strong>
+            </div>
+            <div>
+              <span>Pagado</span>
+              <strong>{money(selectedDebtDetail.paid)}</strong>
+            </div>
+            <div>
+              <span>Estado</span>
+              <strong>{selectedDebtDetail.status.label}</strong>
+            </div>
+          </div>
+
+          <div className="detail-date">
+            <Icon name="calendar" size={17} />
+            Vencimiento: {new Date(`${selectedDebtDetail.dueDate}T12:00:00`).toLocaleDateString(
+              "es-DO",
+              { day: "2-digit", month: "long", year: "numeric" }
+            )}
+          </div>
+
+          {selectedDebtDetail.balance > 0 && (
+            <div className="detail-actions">
+              <button
+                className="primary-button"
+                onClick={() => {
+                  setShowDebtDetail(false)
+                  openPayment(selectedDebtDetail)
+                }}
+              >
+                <Icon name="dollar" size={17} />
+                Registrar pago
+              </button>
+            </div>
+          )}
+        </Modal>
+      )}
+
+      {showSettings && (
+        <Modal
+          title="Configuración"
+          subtitle="Personaliza Kobri para tu negocio."
+          onClose={() => setShowSettings(false)}
+        >
+          <form onSubmit={saveBusinessSettings}>
+            <div className="form-grid">
+              <label className="full">
+                Nombre del negocio
+                <input
+                  value={businessSettings.businessName}
+                  onChange={(event) =>
+                    setBusinessSettings({
+                      ...businessSettings,
+                      businessName: event.target.value,
+                    })
+                  }
+                  placeholder="Ej. Colmado Juan"
+                />
+              </label>
+
+              <label>
+                Teléfono
+                <input
+                  value={businessSettings.phone}
+                  onChange={(event) =>
+                    setBusinessSettings({
+                      ...businessSettings,
+                      phone: event.target.value,
+                    })
+                  }
+                  placeholder="809-000-0000"
+                />
+              </label>
+
+              <label>
+                Moneda principal
+                <select
+                  value={businessSettings.currency}
+                  onChange={(event) =>
+                    setBusinessSettings({
+                      ...businessSettings,
+                      currency: event.target.value,
+                    })
+                  }
+                >
+                  <option value="DOP">Peso dominicano (RD$)</option>
+                </select>
+              </label>
+
+              <label className="full settings-check">
+                <input
+                  type="checkbox"
+                  checked={businessSettings.notifications}
+                  onChange={(event) =>
+                    setBusinessSettings({
+                      ...businessSettings,
+                      notifications: event.target.checked,
+                    })
+                  }
+                />
+                <span>Recibir notificaciones de vencimientos y pagos</span>
+              </label>
+            </div>
+
+            <ModalActions
+              onCancel={() => setShowSettings(false)}
+              submit="Guardar cambios"
+            />
+          </form>
+        </Modal>
+      )}
+
+      {showAccount && (
+        <Modal
+          title="Mi cuenta"
+          subtitle="Información de tu cuenta de Kobri."
+          onClose={() => setShowAccount(false)}
+        >
+          <div className="account-profile">
+            <div className="account-avatar">K</div>
+            <div>
+              <strong>{businessSettings.businessName}</strong>
+              <span>Administrador</span>
+            </div>
+          </div>
+
+          <div className="detail-grid">
+            <div>
+              <span>Plan</span>
+              <strong>Gratis</strong>
+            </div>
+            <div>
+              <span>Moneda</span>
+              <strong>RD$</strong>
+            </div>
+            <div>
+              <span>Clientes</span>
+              <strong>{clients.length}</strong>
+            </div>
+            <div>
+              <span>Deudas</span>
+              <strong>{debts.length}</strong>
+            </div>
+          </div>
+
+          <div className="detail-actions">
+            <button
+              className="secondary-button"
+              onClick={() => {
+                setShowAccount(false)
+                setShowSettings(true)
+              }}
+            >
+              Editar configuración
+            </button>
+          </div>
+        </Modal>
+      )}
     </div>
   )
 }
 
-function DebtTable({ rows, onPay, detailed = false }) {
+function DebtTable({ rows, onPay, onDetails, detailed = false }) {
   return (
     <div className="table-wrapper">
       <table>
@@ -1307,10 +1756,14 @@ function DebtTable({ rows, onPay, detailed = false }) {
               </td>
 
               <td>
-                <div className="debt-concept">
+                <button
+                  className="debt-concept debt-concept-button"
+                  onClick={() => onDetails?.(debt)}
+                  aria-label={`Ver detalle de ${debt.concept}`}
+                >
                   <strong>{debt.concept}</strong>
-                  <span>Creada recientemente</span>
-                </div>
+                  <span>Ver detalle</span>
+                </button>
               </td>
 
               <td>
