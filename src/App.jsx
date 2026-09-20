@@ -61,15 +61,19 @@ function Logo({ collapsed = false }) {
               <stop offset="0%" stopColor="#FFFFFF" />
               <stop offset="100%" stopColor="#EAEFFB" />
             </linearGradient>
-            <linearGradient id="kobriArm" x1="0" y1="1" x2="1" y2="0">
+            <linearGradient id="kobriArmUp" x1="0" y1="1" x2="1" y2="0">
+              <stop offset="0%" stopColor="#0052FF" />
+              <stop offset="100%" stopColor="#00A3FF" />
+            </linearGradient>
+            <linearGradient id="kobriArmDown" x1="0" y1="0" x2="1" y2="1">
               <stop offset="0%" stopColor="#0052FF" />
               <stop offset="100%" stopColor="#00A3FF" />
             </linearGradient>
           </defs>
           <rect x="1.5" y="1.5" width="61" height="61" rx="17" fill="url(#kobriGloss)" stroke="#E3E9FA" />
           <rect x="16" y="14" width="9" height="36" rx="4.5" fill="#0B1324" />
-          <line x1="24" y1="32" x2="46" y2="50" stroke="#0B1324" strokeWidth="8" strokeLinecap="round" />
-          <line x1="24" y1="30" x2="48" y2="13" stroke="url(#kobriArm)" strokeWidth="8" strokeLinecap="round" />
+          <line x1="24" y1="32" x2="46" y2="50" stroke="url(#kobriArmDown)" strokeWidth="8" strokeLinecap="round" />
+          <line x1="24" y1="30" x2="48" y2="13" stroke="url(#kobriArmUp)" strokeWidth="8" strokeLinecap="round" />
         </svg>
       </div>
       {!collapsed && (
