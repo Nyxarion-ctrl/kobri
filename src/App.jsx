@@ -67,9 +67,9 @@ function Logo({ collapsed = false }) {
             </linearGradient>
           </defs>
           <rect x="1.5" y="1.5" width="61" height="61" rx="17" fill="url(#kobriGloss)" stroke="#E3E9FA" />
-          <rect x="17" y="15" width="9" height="34" rx="4.5" fill="#0B1324" />
-          <line x1="24" y1="34" x2="45" y2="50" stroke="#0B1324" strokeWidth="9" strokeLinecap="round" />
-          <line x1="24" y1="32" x2="47" y2="15" stroke="url(#kobriArm)" strokeWidth="9" strokeLinecap="round" />
+          <line x1="21" y1="14" x2="21" y2="50" stroke="#0B1324" strokeWidth="9" strokeLinecap="butt" />
+          <line x1="21" y1="32" x2="46" y2="50" stroke="#0B1324" strokeWidth="9" strokeLinecap="butt" />
+          <line x1="21" y1="32" x2="47" y2="14" stroke="url(#kobriArm)" strokeWidth="9" strokeLinecap="butt" />
         </svg>
       </div>
       {!collapsed && (
