@@ -56,11 +56,22 @@ function Logo({ collapsed = false }) {
     <div className={`brand ${collapsed ? "brand-small" : ""}`} aria-label="Kobri">
       <div className="brand-mark">
         <svg viewBox="0 0 64 64" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
-          <rect x="2" y="2" width="60" height="60" rx="17" fill="#FFFFFF" />
-          <line x1="20" y1="15" x2="20" y2="49" stroke="#0B1324" strokeWidth="8" strokeLinecap="round" />
-          <line x1="23" y1="32" x2="42" y2="16" stroke="#0B1324" strokeWidth="8" strokeLinecap="round" />
-          <line x1="23" y1="32" x2="42" y2="48" stroke="#0B1324" strokeWidth="8" strokeLinecap="round" />
-          <circle cx="45" cy="16" r="5.5" fill="#4169FF" />
+          <defs>
+            <linearGradient id="kobriBg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor="#FFFFFF" />
+              <stop offset="100%" stopColor="#EDF1FF" />
+            </linearGradient>
+            <linearGradient id="kobriBolt" x1="0" y1="1" x2="1" y2="0">
+              <stop offset="0%" stopColor="#2F52E6" />
+              <stop offset="100%" stopColor="#8AA4FF" />
+            </linearGradient>
+          </defs>
+          <rect x="1.5" y="1.5" width="61" height="61" rx="17" fill="url(#kobriBg)" stroke="#E3E9FA" />
+          <circle cx="28.5" cy="35" r="15" fill="#0B1324" />
+          <circle cx="28.5" cy="35" r="11" fill="none" stroke="rgba(255,255,255,0.16)" strokeWidth="1" />
+          <line x1="10.5" y1="49.5" x2="33.5" y2="22" stroke="#4169FF" strokeOpacity="0.28" strokeWidth="3.4" strokeLinecap="round" />
+          <line x1="15" y1="48" x2="42" y2="16" stroke="url(#kobriBolt)" strokeWidth="7.5" strokeLinecap="round" />
+          <circle cx="43.5" cy="14.5" r="4" fill="#8AA4FF" />
         </svg>
       </div>
       {!collapsed && (
@@ -394,6 +405,24 @@ function App() {
     localStorage.setItem("kobri_theme", theme)
     document.documentElement.classList.toggle("kobri-dark", theme === "dark")
   }, [theme])
+
+  const anyModalOpen =
+    showDebtModal ||
+    showClientModal ||
+    showPaymentModal ||
+    showHelpModal ||
+    showSettings ||
+    showAccount ||
+    showPlans ||
+    showClientDetail ||
+    showDebtDetail
+
+  useEffect(() => {
+    document.body.style.overflow = anyModalOpen ? "hidden" : ""
+    return () => {
+      document.body.style.overflow = ""
+    }
+  }, [anyModalOpen])
 
   const paidForDebt = (debtId) =>
     payments
