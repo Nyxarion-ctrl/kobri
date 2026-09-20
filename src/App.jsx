@@ -48,28 +48,29 @@ const initialDebts = [
 
 function Logo({ collapsed = false }) {
   return (
-    <div className={`brand ${collapsed ? "brand-small" : ""}`} aria-label="Kobri">
+    <div className={`brand ${collapsed ? "brand-small" : ""}`}>
       <div className="brand-mark">
-        <svg viewBox="0 0 64 64" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
-          <rect x="2" y="2" width="60" height="60" rx="16" fill="#FFFFFF" />
+        <svg viewBox="0 0 64 64" aria-hidden="true">
+          <rect x="2" y="2" width="60" height="60" rx="16" fill="#F8FAFF" />
           <path
-            d="M18 13H27V27.5L40.5 13H51L35.1 30L51.5 51H40L27 34.6V51H18V13Z"
+            d="M16 13h9v14.5L39.5 13H51L35.5 28.7 51.5 51H40L26.7 33.7 25 35.4V51h-9V13Z"
             fill="#0B1324"
           />
           <path
-            d="M29.4 29.7L42.8 16.2H51L35.4 32.2L29.4 29.7Z"
+            d="M28 29.1 41.2 16H51L34.1 32.6 28 29.1Z"
             fill="#4169FF"
           />
           <path
-            d="M39.2 39.8L45.4 33.6L51.2 40.1L45 46.4L39.2 39.8Z"
+            d="m31 37.2 7.2-7 7.2 7-7.2 7-7.2-7Z"
             fill="#4169FF"
+            opacity=".9"
           />
         </svg>
       </div>
       {!collapsed && (
         <div className="brand-copy">
           <span>KOBRI</span>
-          <small>COBRANZAS · CONTROL</small>
+          <small>COBRANZAS • CONTROL</small>
         </div>
       )}
     </div>
@@ -176,15 +177,15 @@ function Icon({ name, size = 20 }) {
         <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H7" />
       </>
     ),
+    settings: (
+      <>
+        <circle cx="12" cy="12" r="3.2" />
+        <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-1.7 1.7-.06-.06a1.7 1.7 0 0 0-1.88-.34 1.7 1.7 0 0 0-1.04 1.57V22h-2.4v-.09a1.7 1.7 0 0 0-1.04-1.57 1.7 1.7 0 0 0-1.88.34l-.06.06-1.7-1.7.06-.06A1.7 1.7 0 0 0 8.44 17a1.7 1.7 0 0 0-1.57-1.04H6.8v-2.4h.07A1.7 1.7 0 0 0 8.44 12a1.7 1.7 0 0 0-.34-1.88l-.06-.06 1.7-1.7.06.06a1.7 1.7 0 0 0 1.88.34 1.7 1.7 0 0 0 1.04-1.57V7h2.4v.19a1.7 1.7 0 0 0 1.04 1.57 1.7 1.7 0 0 0 1.88-.34l.06-.06 1.7 1.7-.06.06A1.7 1.7 0 0 0 19.4 12c.16.64.71 1.1 1.37 1.1H21v2.4h-.23A1.4 1.4 0 0 0 19.4 15Z" />
+      </>
+    ),
     menu: (
       <>
         <path d="M4 6h16M4 12h16M4 18h16" />
-      </>
-    ),
-    settings: (
-      <>
-        <path d="M12 8.2a3.8 3.8 0 1 0 0 7.6 3.8 3.8 0 0 0 0-7.6Z" />
-        <path d="M19.2 13.1a1.8 1.8 0 0 0 0-2.2l1.1-1.3-1.9-1.9-1.4 1.1a1.8 1.8 0 0 0-2.1-.9L14.5 6h-5l-.4 1.9a1.8 1.8 0 0 0-2.1.9L5.6 7.7 3.7 9.6l1.1 1.3a1.8 1.8 0 0 0 0 2.2l-1.1 1.3 1.9 1.9 1.4-1.1a1.8 1.8 0 0 0 2.1.9l.4 1.9h5l.4-1.9a1.8 1.8 0 0 0 2.1-.9l1.4 1.1 1.9-1.9-1.1-1.3Z" />
       </>
     ),
   }
@@ -210,20 +211,13 @@ function App() {
   const [showDebtModal, setShowDebtModal] = useState(false)
   const [showClientModal, setShowClientModal] = useState(false)
   const [showPaymentModal, setShowPaymentModal] = useState(false)
+  const [showSettingsModal, setShowSettingsModal] = useState(false)
+  const [showHelpModal, setShowHelpModal] = useState(false)
   const [showNotifications, setShowNotifications] = useState(false)
-  const [showSettings, setShowSettings] = useState(false)
-  const [showAccount, setShowAccount] = useState(false)
-  const [showPlans, setShowPlans] = useState(false)
-  const [showClientDetail, setShowClientDetail] = useState(false)
-  const [showDebtDetail, setShowDebtDetail] = useState(false)
   const [selectedDebt, setSelectedDebt] = useState(null)
-  const [selectedClient, setSelectedClient] = useState(null)
-  const [selectedDebtDetail, setSelectedDebtDetail] = useState(null)
   const [search, setSearch] = useState("")
 
-  const [currentPlan, setCurrentPlan] = useState(() => localStorage.getItem("kobri_plan") || "Gratis")
-
-  const [businessSettings, setBusinessSettings] = useState(() => {
+  const [settings, setSettings] = useState(() => {
     const saved = localStorage.getItem("kobri_settings")
     return saved
       ? JSON.parse(saved)
@@ -233,11 +227,6 @@ function App() {
           currency: "DOP",
           notifications: true,
         }
-  })
-
-  const [readNotifications, setReadNotifications] = useState(() => {
-    const saved = localStorage.getItem("kobri_read_notifications")
-    return saved ? JSON.parse(saved) : []
   })
 
   const [clients, setClients] = useState(() => {
@@ -287,19 +276,8 @@ function App() {
   }, [payments])
 
   useEffect(() => {
-    localStorage.setItem("kobri_settings", JSON.stringify(businessSettings))
-  }, [businessSettings])
-
-  useEffect(() => {
-    localStorage.setItem("kobri_plan", currentPlan)
-  }, [currentPlan])
-
-  useEffect(() => {
-    localStorage.setItem(
-      "kobri_read_notifications",
-      JSON.stringify(readNotifications)
-    )
-  }, [readNotifications])
+    localStorage.setItem("kobri_settings", JSON.stringify(settings))
+  }, [settings])
 
   const paidForDebt = (debtId) =>
     payments
@@ -353,99 +331,10 @@ function App() {
       .includes(search.toLowerCase())
   )
 
-  const notifications = useMemo(() => {
-    if (!businessSettings.notifications) return []
-
-    const items = []
-
-    debtRows
-      .filter((debt) => debt.status.className === "overdue")
-      .slice(0, 5)
-      .forEach((debt) => {
-        items.push({
-          id: `overdue-${debt.id}`,
-          type: "overdue",
-          title: "Deuda vencida",
-          text: `${debt.client?.name || "Cliente"} tiene ${money(
-            debt.balance
-          )} pendiente.`,
-        })
-      })
-
-    debtRows
-      .filter((debt) => {
-        if (debt.status.className === "paid") return false
-        const due = new Date(`${debt.dueDate}T12:00:00`)
-        const now = new Date()
-        const diff = Math.ceil((due - now) / (1000 * 60 * 60 * 24))
-        return diff >= 0 && diff <= 3
-      })
-      .slice(0, 5)
-      .forEach((debt) => {
-        items.push({
-          id: `upcoming-${debt.id}`,
-          type: "upcoming",
-          title: "Vencimiento próximo",
-          text: `${debt.client?.name || "Cliente"} vence el ${new Date(
-            `${debt.dueDate}T12:00:00`
-          ).toLocaleDateString("es-DO", { day: "2-digit", month: "short" })}.`,
-        })
-      })
-
-    payments.slice(0, 5).forEach((payment) => {
-      const debt = debts.find((item) => item.id === payment.debtId)
-      const client = clients.find((item) => item.id === debt?.clientId)
-
-      items.push({
-        id: `payment-${payment.id}`,
-        type: "payment",
-        title: "Pago registrado",
-        text: `${client?.name || "Cliente"} pagó ${money(payment.amount)}.`,
-      })
-    })
-
-    return items.slice(0, 10)
-  }, [
-    debtRows,
-    payments,
-    debts,
-    clients,
-    businessSettings.notifications,
-  ])
-
-  const unreadNotifications = notifications.filter(
-    (item) => !readNotifications.includes(item.id)
-  ).length
-
   function navigate(view) {
     setActiveView(view)
     setSearch("")
     setSidebarOpen(false)
-  }
-
-  function openClientDetail(client) {
-    setSelectedClient(client)
-    setShowClientDetail(true)
-  }
-
-  function openDebtDetail(debt) {
-    setSelectedDebtDetail(debt)
-    setShowDebtDetail(true)
-  }
-
-  function markNotificationsAsRead() {
-    setReadNotifications(notifications.map((item) => item.id))
-  }
-
-  function markNotificationAsRead(id) {
-    setReadNotifications((current) =>
-      current.includes(id) ? current : [...current, id]
-    )
-  }
-
-  function saveBusinessSettings(event) {
-    event.preventDefault()
-    setShowSettings(false)
   }
 
   function addClient(event) {
@@ -539,6 +428,20 @@ function App() {
     setSelectedDebt(null)
   }
 
+  const notifications = useMemo(() => {
+    if (!settings.notifications) return []
+
+    return debtRows
+      .filter((debt) => debt.status.className !== "paid")
+      .sort((a, b) => a.dueDate.localeCompare(b.dueDate))
+      .slice(0, 4)
+  }, [debtRows, settings.notifications])
+
+  function saveSettings(event) {
+    event.preventDefault()
+    setShowSettingsModal(false)
+  }
+
   function pageTitle() {
     const titles = {
       dashboard: ["Resumen", "Todo lo importante de tu negocio, en un solo lugar."],
@@ -572,22 +475,13 @@ function App() {
           </button>
         </div>
 
-        <button
-          className="workspace workspace-button"
-          onClick={() => {
-            setShowAccount(true)
-            setShowNotifications(false)
-            setShowSettings(false)
-            setShowPlans(false)
-          }}
-          title="Abrir mi cuenta"
-        >
+        <button className="workspace" onClick={() => setShowSettingsModal(true)}>
           <div className="workspace-avatar">K</div>
           <div>
-            <strong>{businessSettings.businessName}</strong>
-            <span>Plan {currentPlan}</span>
+            <strong>{settings.businessName || "Mi negocio"}</strong>
+            <span>Plan gratuito</span>
           </div>
-          <Icon name="arrow" size={16} />
+          <Icon name="arrow" size={17} />
         </button>
 
         <nav className="navigation">
@@ -635,15 +529,14 @@ function App() {
         </nav>
 
         <div className="sidebar-bottom">
-          <div className="help-card">
+          <button className="help-card" onClick={() => setShowHelpModal(true)}>
             <div className="help-icon">?</div>
             <div>
               <strong>¿Necesitas ayuda?</strong>
               <span>Estamos aquí para ayudarte.</span>
             </div>
-          </div>
-
-
+            <Icon name="arrow" size={15} />
+          </button>
         </div>
       </aside>
 
@@ -664,99 +557,72 @@ function App() {
           </div>
 
           <div className="topbar-actions">
-            <button
-              className="icon-button notification"
-              onClick={() => {
-                setShowNotifications((current) => !current)
-                setShowSettings(false)
-                setShowAccount(false)
-                setShowPlans(false)
-              }}
-              aria-label="Notificaciones"
-              title="Notificaciones"
-            >
-              <Icon name="bell" size={19} />
-              {unreadNotifications > 0 && (
-                <i>{unreadNotifications > 9 ? "9+" : unreadNotifications}</i>
+            <div className="notification-wrap">
+              <button
+                className={`icon-button notification ${showNotifications ? "is-open" : ""}`}
+                onClick={() => setShowNotifications((current) => !current)}
+                aria-label="Notificaciones"
+                aria-expanded={showNotifications}
+              >
+                <Icon name="bell" size={19} />
+                {notifications.length > 0 && <i />}
+              </button>
+
+              {showNotifications && (
+                <div className="notification-popover">
+                  <div className="popover-head">
+                    <div>
+                      <strong>Notificaciones</strong>
+                      <span>{notifications.length} pendientes</span>
+                    </div>
+                    <button onClick={() => setShowNotifications(false)} aria-label="Cerrar">
+                      <Icon name="close" size={15} />
+                    </button>
+                  </div>
+                  {notifications.length === 0 ? (
+                    <div className="notification-empty">
+                      <Icon name="check" size={18} />
+                      <span>No tienes notificaciones nuevas.</span>
+                    </div>
+                  ) : (
+                    <div className="notification-list">
+                      {notifications.map((item) => (
+                        <button
+                          key={item.id}
+                          className="notification-item"
+                          onClick={() => {
+                            setShowNotifications(false)
+                            navigate("debts")
+                          }}
+                        >
+                          <span className={`notification-dot ${item.status.className}`} />
+                          <span>
+                            <strong>{item.client?.name || "Cliente"}</strong>
+                            <small>{item.status.label} · {money(item.balance)}</small>
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               )}
-            </button>
+            </div>
 
             <button
-              className="icon-button"
-              onClick={() => {
-                setShowSettings(true)
-                setShowNotifications(false)
-                setShowAccount(false)
-                setShowPlans(false)
-              }}
+              className={`icon-button settings-button ${showSettingsModal ? "is-open" : ""}`}
+              onClick={() => setShowSettingsModal(true)}
               aria-label="Configuración"
-              title="Configuración"
             >
-              <Icon name="settings" size={19} />
+              <Icon name="settings" size={18} />
             </button>
 
-            <button
-              className="top-profile top-profile-button"
-              onClick={() => {
-                setShowAccount(true)
-                setShowNotifications(false)
-                setShowSettings(false)
-                setShowPlans(false)
-              }}
-              title="Mi cuenta"
-            >
+            <button className="top-profile" onClick={() => setShowSettingsModal(true)}>
               <div className="top-avatar">K</div>
               <div className="top-profile-text">
-                <strong>{businessSettings.businessName}</strong>
+                <strong>{settings.businessName || "Mi negocio"}</strong>
                 <span>Administrador</span>
               </div>
             </button>
-
-            {showNotifications && (
-              <div className="notification-panel">
-                <div className="notification-header">
-                  <div>
-                    <strong>Notificaciones</strong>
-                    <span>
-                      {unreadNotifications > 0
-                        ? `${unreadNotifications} sin leer`
-                        : "Todo leído"}
-                    </span>
-                  </div>
-                  {unreadNotifications > 0 && (
-                    <button onClick={markNotificationsAsRead}>
-                      Marcar todas
-                    </button>
-                  )}
-                </div>
-
-                <div className="notification-list">
-                  {notifications.length === 0 ? (
-                    <div className="notification-empty">
-                      <Icon name="check" size={20} />
-                      <strong>No tienes notificaciones</strong>
-                      <span>Todo está al día.</span>
-                    </div>
-                  ) : (
-                    notifications.map((item) => (
-                      <button
-                        className={`notification-item ${
-                          readNotifications.includes(item.id) ? "read" : "unread"
-                        }`}
-                        key={item.id}
-                        onClick={() => markNotificationAsRead(item.id)}
-                      >
-                        <div className={`notification-dot ${item.type}`} />
-                        <div>
-                          <strong>{item.title}</strong>
-                          <span>{item.text}</span>
-                        </div>
-                      </button>
-                    ))
-                  )}
-                </div>
-              </div>
-            )}
           </div>
         </header>
 
@@ -865,11 +731,7 @@ function App() {
                       action={() => setShowDebtModal(true)}
                     />
                   ) : (
-                    <DebtTable
-                      rows={debtRows.slice(0, 5)}
-                      onPay={openPayment}
-                      onDetails={openDebtDetail}
-                    />
+                    <DebtTable rows={debtRows.slice(0, 5)} onPay={openPayment} />
                   )}
                 </div>
 
@@ -1000,23 +862,20 @@ function App() {
                           return (
                             <tr key={client.id}>
                               <td>
-                                <div className="client-cell">
+                                <div className="client-cell client-cell--compact">
                                   <div className="client-avatar">
-                                    {client.name
-                                      .charAt(0)
-                                      .toUpperCase()}
+                                    {client.name.charAt(0).toUpperCase()}
                                   </div>
-                                  <div>
+                                  <div className="client-main-info">
                                     <strong>{client.name}</strong>
-                                    <span>Cliente</span>
+                                    <span>{client.phone || "Sin teléfono"}</span>
                                   </div>
                                 </div>
                               </td>
 
                               <td>
                                 <div className="contact-cell">
-                                  <strong>{client.phone || "—"}</strong>
-                                  <span>{client.email || "Sin correo"}</span>
+                                  <span className="contact-email">{client.email || "Sin correo"}</span>
                                 </div>
                               </td>
 
@@ -1035,12 +894,8 @@ function App() {
                               </td>
 
                               <td>
-                                <button
-                                  className="row-action"
-                                  onClick={() => openClientDetail(client)}
-                                  aria-label={`Ver ${client.name}`}
-                                >
-                                  <Icon name="arrow" size={17} />
+                                <button className="row-action">
+                                  <Icon name="more" size={18} />
                                 </button>
                               </td>
                             </tr>
@@ -1099,7 +954,6 @@ function App() {
                   <DebtTable
                     rows={filteredDebts}
                     onPay={openPayment}
-                    onDetails={openDebtDetail}
                     detailed
                   />
                 )}
@@ -1229,6 +1083,124 @@ function App() {
           )}
         </div>
       </main>
+
+      {showSettingsModal && (
+        <Modal
+          title="Configuración"
+          subtitle="Personaliza Kobri para tu negocio."
+          onClose={() => setShowSettingsModal(false)}
+          wide
+        >
+          <form onSubmit={saveSettings}>
+            <div className="settings-layout">
+              <div className="settings-section">
+                <div className="settings-section-head">
+                  <strong>Negocio</strong>
+                  <span>Información básica de tu cuenta.</span>
+                </div>
+
+                <div className="form-grid">
+                  <label className="full">
+                    Nombre del negocio
+                    <input
+                      autoFocus
+                      value={settings.businessName}
+                      onChange={(event) =>
+                        setSettings({ ...settings, businessName: event.target.value })
+                      }
+                      placeholder="Mi negocio"
+                    />
+                  </label>
+
+                  <label>
+                    Teléfono
+                    <input
+                      value={settings.phone}
+                      onChange={(event) =>
+                        setSettings({ ...settings, phone: event.target.value })
+                      }
+                      placeholder="809-000-0000"
+                    />
+                  </label>
+
+                  <label>
+                    Moneda principal
+                    <select
+                      value={settings.currency}
+                      onChange={(event) =>
+                        setSettings({ ...settings, currency: event.target.value })
+                      }
+                    >
+                      <option value="DOP">Peso dominicano (RD$)</option>
+                    </select>
+                  </label>
+                </div>
+              </div>
+
+              <div className="settings-section">
+                <div className="settings-section-head">
+                  <strong>Notificaciones</strong>
+                  <span>Controla los avisos importantes de tus cobros.</span>
+                </div>
+
+                <label className="setting-toggle-row">
+                  <input
+                    type="checkbox"
+                    checked={settings.notifications}
+                    onChange={(event) =>
+                      setSettings({ ...settings, notifications: event.target.checked })
+                    }
+                  />
+                  <span>
+                    <strong>Recibir notificaciones</strong>
+                    <small>Vencimientos y pagos pendientes.</small>
+                  </span>
+                </label>
+              </div>
+
+              <div className="settings-plan-card">
+                <div>
+                  <span>PLAN ACTUAL</span>
+                  <strong>Gratis</strong>
+                  <small>Ideal para comenzar a organizar tus cobros.</small>
+                </div>
+                <button type="button" className="secondary-button" onClick={() => { setShowSettingsModal(false); setShowHelpModal(true) }}>
+                  Conocer planes
+                </button>
+              </div>
+            </div>
+
+            <ModalActions
+              onCancel={() => setShowSettingsModal(false)}
+              submit="Guardar cambios"
+            />
+          </form>
+        </Modal>
+      )}
+
+      {showHelpModal && (
+        <Modal
+          title="Centro de ayuda"
+          subtitle="Respuestas rápidas para empezar con Kobri."
+          onClose={() => setShowHelpModal(false)}
+        >
+          <div className="help-modal-content">
+            <div className="help-topic">
+              <span>01</span>
+              <div><strong>Clientes</strong><p>Registra a quién le debes cobrar y mantén sus datos organizados.</p></div>
+            </div>
+            <div className="help-topic">
+              <span>02</span>
+              <div><strong>Deudas</strong><p>Crea una cuenta pendiente con concepto, monto y fecha de vencimiento.</p></div>
+            </div>
+            <div className="help-topic">
+              <span>03</span>
+              <div><strong>Pagos</strong><p>Usa Cobrar para registrar cada pago y actualizar automáticamente el saldo.</p></div>
+            </div>
+            <div className="help-contact">¿Necesitas asistencia? Escríbenos cuando habilitemos el canal de soporte de tu cuenta.</div>
+          </div>
+        </Modal>
+      )}
 
       {showClientModal && (
         <Modal
@@ -1456,297 +1428,14 @@ function App() {
           </form>
         </Modal>
       )}
-
-      {showClientDetail && selectedClient && (
-        <Modal
-          title={selectedClient.name}
-          subtitle="Información y situación de este cliente."
-          onClose={() => {
-            setShowClientDetail(false)
-            setSelectedClient(null)
-          }}
-        >
-          <div className="detail-card">
-            <div className="detail-avatar">
-              {selectedClient.name.charAt(0).toUpperCase()}
-            </div>
-            <div>
-              <strong>{selectedClient.name}</strong>
-              <span>{selectedClient.phone || "Sin teléfono"}</span>
-              <span>{selectedClient.email || "Sin correo electrónico"}</span>
-            </div>
-          </div>
-
-          <div className="detail-grid">
-            <div>
-              <span>Saldo pendiente</span>
-              <strong>
-                {money(
-                  debtRows
-                    .filter((debt) => debt.clientId === selectedClient.id)
-                    .reduce((sum, debt) => sum + debt.balance, 0)
-                )}
-              </strong>
-            </div>
-            <div>
-              <span>Deudas</span>
-              <strong>
-                {debtRows.filter((debt) => debt.clientId === selectedClient.id).length}
-              </strong>
-            </div>
-          </div>
-
-          <div className="detail-actions">
-            <button
-              className="primary-button"
-              onClick={() => {
-                setShowClientDetail(false)
-                setDebtForm((current) => ({
-                  ...current,
-                  clientId: String(selectedClient.id),
-                }))
-                setShowDebtModal(true)
-              }}
-            >
-              <Icon name="plus" size={17} />
-              Nueva deuda
-            </button>
-          </div>
-        </Modal>
-      )}
-
-      {showDebtDetail && selectedDebtDetail && (
-        <Modal
-          title={selectedDebtDetail.concept}
-          subtitle={`Deuda de ${selectedDebtDetail.client?.name || "cliente"}.`}
-          onClose={() => {
-            setShowDebtDetail(false)
-            setSelectedDebtDetail(null)
-          }}
-        >
-          <div className="detail-grid">
-            <div>
-              <span>Monto original</span>
-              <strong>{money(selectedDebtDetail.amount)}</strong>
-            </div>
-            <div>
-              <span>Saldo pendiente</span>
-              <strong>{money(selectedDebtDetail.balance)}</strong>
-            </div>
-            <div>
-              <span>Pagado</span>
-              <strong>{money(selectedDebtDetail.paid)}</strong>
-            </div>
-            <div>
-              <span>Estado</span>
-              <strong>{selectedDebtDetail.status.label}</strong>
-            </div>
-          </div>
-
-          <div className="detail-date">
-            <Icon name="calendar" size={17} />
-            Vencimiento: {new Date(`${selectedDebtDetail.dueDate}T12:00:00`).toLocaleDateString(
-              "es-DO",
-              { day: "2-digit", month: "long", year: "numeric" }
-            )}
-          </div>
-
-          {selectedDebtDetail.balance > 0 && (
-            <div className="detail-actions">
-              <button
-                className="primary-button"
-                onClick={() => {
-                  setShowDebtDetail(false)
-                  openPayment(selectedDebtDetail)
-                }}
-              >
-                <Icon name="dollar" size={17} />
-                Registrar pago
-              </button>
-            </div>
-          )}
-        </Modal>
-      )}
-
-      {showSettings && (
-        <Modal
-          title="Configuración"
-          subtitle="Personaliza Kobri para tu negocio."
-          onClose={() => setShowSettings(false)}
-        >
-          <form onSubmit={saveBusinessSettings}>
-            <div className="form-grid">
-              <label className="full">
-                Nombre del negocio
-                <input
-                  value={businessSettings.businessName}
-                  onChange={(event) =>
-                    setBusinessSettings({
-                      ...businessSettings,
-                      businessName: event.target.value,
-                    })
-                  }
-                  placeholder="Ej. Colmado Juan"
-                />
-              </label>
-
-              <label>
-                Teléfono
-                <input
-                  value={businessSettings.phone}
-                  onChange={(event) =>
-                    setBusinessSettings({
-                      ...businessSettings,
-                      phone: event.target.value,
-                    })
-                  }
-                  placeholder="809-000-0000"
-                />
-              </label>
-
-              <label>
-                Moneda principal
-                <select
-                  value={businessSettings.currency}
-                  onChange={(event) =>
-                    setBusinessSettings({
-                      ...businessSettings,
-                      currency: event.target.value,
-                    })
-                  }
-                >
-                  <option value="DOP">Peso dominicano (RD$)</option>
-                </select>
-              </label>
-
-              <label className="full settings-check">
-                <input
-                  type="checkbox"
-                  checked={businessSettings.notifications}
-                  onChange={(event) =>
-                    setBusinessSettings({
-                      ...businessSettings,
-                      notifications: event.target.checked,
-                    })
-                  }
-                />
-                <span>Recibir notificaciones de vencimientos y pagos</span>
-              </label>
-            </div>
-
-            <ModalActions
-              onCancel={() => setShowSettings(false)}
-              submit="Guardar cambios"
-            />
-          </form>
-        </Modal>
-      )}
-
-      {showAccount && (
-        <Modal
-          title="Mi cuenta"
-          subtitle="Información de tu cuenta de Kobri."
-          onClose={() => setShowAccount(false)}
-        >
-          <div className="account-profile">
-            <div className="account-avatar">K</div>
-            <div>
-              <strong>{businessSettings.businessName}</strong>
-              <span>Administrador</span>
-            </div>
-          </div>
-
-          <div className="detail-grid">
-            <div>
-              <span>Plan</span>
-              <strong>{currentPlan}</strong>
-            </div>
-            <div>
-              <span>Moneda</span>
-              <strong>RD$</strong>
-            </div>
-            <div>
-              <span>Clientes</span>
-              <strong>{clients.length}</strong>
-            </div>
-            <div>
-              <span>Deudas</span>
-              <strong>{debts.length}</strong>
-            </div>
-          </div>
-
-          <div className="account-actions">
-            <button
-              className="secondary-button"
-              onClick={() => {
-                setShowAccount(false)
-                setShowSettings(true)
-              }}
-            >
-              Editar configuración
-            </button>
-            <button
-              className="primary-button"
-              onClick={() => {
-                setShowAccount(false)
-                setShowPlans(true)
-              }}
-            >
-              Ver planes
-            </button>
-          </div>
-        </Modal>
-      )}
-
-      {showPlans && (
-        <Modal
-          title="Planes de Kobri"
-          subtitle="Elige el nivel que mejor se adapte a tu negocio."
-          onClose={() => setShowPlans(false)}
-        >
-          <div className="plans-grid">
-            {[
-              { name: "Gratis", price: "RD$0", note: "Para empezar", features: ["Hasta 20 clientes", "Control de deudas", "Registro de pagos"] },
-              { name: "Pro", price: "RD$299", note: "Para negocios en crecimiento", features: ["Clientes ilimitados", "Recordatorios", "Reportes y métricas"] },
-              { name: "Negocio", price: "RD$599", note: "Para equipos", features: ["Todo lo de Pro", "Usuarios y permisos", "Funciones avanzadas"] },
-            ].map((plan) => (
-              <div className={`plan-card ${currentPlan === plan.name ? "selected" : ""}`} key={plan.name}>
-                {currentPlan === plan.name && <span className="plan-current">ACTUAL</span>}
-                <div className="plan-card-top">
-                  <div>
-                    <strong>{plan.name}</strong>
-                    <span>{plan.note}</span>
-                  </div>
-                  <b>{plan.price}<small>/mes</small></b>
-                </div>
-                <ul>
-                  {plan.features.map((feature) => (
-                    <li key={feature}><Icon name="check" size={14} />{feature}</li>
-                  ))}
-                </ul>
-                <button
-                  className={currentPlan === plan.name ? "secondary-button" : "primary-button"}
-                  onClick={() => {
-                    setCurrentPlan(plan.name)
-                    setShowPlans(false)
-                  }}
-                >
-                  {currentPlan === plan.name ? "Plan actual" : `Elegir ${plan.name}`}
-                </button>
-              </div>
-            ))}
-          </div>
-          <p className="plans-note">La selección del plan es visual por ahora. Conectaremos el cobro real cuando integremos suscripciones y pagos.</p>
-        </Modal>
-      )}
     </div>
   )
 }
 
-function DebtTable({ rows, onPay, onDetails, detailed = false }) {
+function DebtTable({ rows, onPay, detailed = false }) {
   return (
     <div className="table-wrapper">
-      <table className={`data-table ${detailed ? "detailed-table" : "compact-table"}`}>
+      <table>
         <thead>
           <tr>
             <th>CLIENTE</th>
@@ -1762,11 +1451,12 @@ function DebtTable({ rows, onPay, onDetails, detailed = false }) {
           {rows.map((debt) => (
             <tr key={debt.id}>
               <td>
-                <div className="client-cell client-identity">
+                <div className="client-cell client-cell--compact">
                   <div className="client-avatar">
                     {debt.client?.name?.charAt(0) || "K"}
                   </div>
-                  <div className="client-copy">
+
+                  <div>
                     <strong>{debt.client?.name || "Cliente"}</strong>
                     <span>{debt.client?.phone || "Sin teléfono"}</span>
                   </div>
@@ -1774,14 +1464,10 @@ function DebtTable({ rows, onPay, onDetails, detailed = false }) {
               </td>
 
               <td>
-                <button
-                  className="debt-concept debt-concept-button"
-                  onClick={() => onDetails?.(debt)}
-                  aria-label={`Ver detalle de ${debt.concept}`}
-                >
-                  <span className="concept-name">{debt.concept}</span>
-                  <span className="concept-detail">Ver detalle de la deuda</span>
-                </button>
+                <div className="debt-concept debt-concept--compact">
+                  <strong>{debt.concept}</strong>
+                  <span>Ver detalle de la deuda</span>
+                </div>
               </td>
 
               <td>
@@ -1857,10 +1543,10 @@ function EmptyState({ icon, title, text, action }) {
   )
 }
 
-function Modal({ title, subtitle, onClose, children }) {
+function Modal({ title, subtitle, onClose, children, wide = false }) {
   return (
     <div className="modal-backdrop" onMouseDown={onClose}>
-      <div className="modal" onMouseDown={(event) => event.stopPropagation()}>
+      <div className={`modal ${wide ? "modal-wide" : ""}`} onMouseDown={(event) => event.stopPropagation()}>
         <div className="modal-header">
           <div>
             <h2>{title}</h2>
