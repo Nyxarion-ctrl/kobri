@@ -65,11 +65,15 @@ function Logo({ collapsed = false }) {
               <stop offset="0%" stopColor="#0052FF" />
               <stop offset="100%" stopColor="#00A3FF" />
             </linearGradient>
+            <clipPath id="kobriClip">
+              <rect x="1.5" y="1.5" width="61" height="61" rx="17" />
+            </clipPath>
           </defs>
           <rect x="1.5" y="1.5" width="61" height="61" rx="17" fill="url(#kobriGloss)" stroke="#E3E9FA" />
-          <line x1="21" y1="14" x2="21" y2="50" stroke="#0B1324" strokeWidth="9" strokeLinecap="butt" />
-          <line x1="21" y1="32" x2="46" y2="50" stroke="#0B1324" strokeWidth="9" strokeLinecap="butt" />
-          <line x1="21" y1="32" x2="47" y2="14" stroke="url(#kobriArm)" strokeWidth="9" strokeLinecap="butt" />
+          <g clipPath="url(#kobriClip)">
+            <rect x="14" y="14" width="11" height="36" rx="5.5" fill="#0B1324" />
+            <line x1="19" y1="40" x2="58" y2="6" stroke="url(#kobriArm)" strokeWidth="11" strokeLinecap="round" />
+          </g>
         </svg>
       </div>
       {!collapsed && (
