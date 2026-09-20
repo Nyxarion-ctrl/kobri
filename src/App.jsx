@@ -62,8 +62,8 @@ function Logo({ collapsed = false }) {
               <stop offset="100%" stopColor="#EAEFFB" />
             </linearGradient>
             <linearGradient id="kobriArm" x1="0" y1="1" x2="1" y2="0">
-              <stop offset="0%" stopColor="#2F52E6" />
-              <stop offset="100%" stopColor="#6FA8FF" />
+              <stop offset="0%" stopColor="#0052FF" />
+              <stop offset="100%" stopColor="#00A3FF" />
             </linearGradient>
           </defs>
           <rect x="1.5" y="1.5" width="61" height="61" rx="17" fill="url(#kobriGloss)" stroke="#E3E9FA" />
