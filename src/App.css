@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&family=Montserrat:wght@600;700;800&display=swap");
 
 /* =========================================================
    KOBRI — SISTEMA DE DISEÑO
@@ -213,10 +213,23 @@ select:focus-visible {
 }
 
 .sidebar-top {
+  position: relative;
   height: 54px;
   display: flex;
   align-items: center;
   padding: 0 8px;
+}
+
+.sidebar-top::before {
+  content: "";
+  position: absolute;
+  top: -34px;
+  left: -24px;
+  width: 170px;
+  height: 170px;
+  background: radial-gradient(circle, rgba(0, 163, 255, 0.3) 0%, rgba(0, 163, 255, 0) 70%);
+  pointer-events: none;
+  z-index: 0;
 }
 
 .brand {
@@ -227,13 +240,15 @@ select:focus-visible {
 }
 
 .brand-mark {
+  position: relative;
+  z-index: 1;
   width: 40px;
   height: 40px;
   display: grid;
   place-items: center;
   background: #fff;
   border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.28), 0 0 0 4px rgba(65, 105, 255, 0.12);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3), 0 0 0 4px rgba(0, 163, 255, 0.14);
 }
 
 .brand-mark svg {
@@ -242,6 +257,8 @@ select:focus-visible {
 }
 
 .brand-copy {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -249,19 +266,20 @@ select:focus-visible {
 }
 
 .brand-copy > span {
-  font-family: var(--font-display);
+  font-family: "Montserrat", var(--font-display);
   color: #fff;
   font-size: 21px;
   font-weight: 800;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
 }
 
 .brand-copy small {
   margin-top: 5px;
   color: #8b9ab5;
+  font-family: "Montserrat", var(--font-body);
   font-size: 7px;
   font-weight: 700;
-  letter-spacing: 1.1px;
+  letter-spacing: 1.8px;
 }
 
 .workspace {
