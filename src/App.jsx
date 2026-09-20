@@ -56,19 +56,11 @@ function Logo({ collapsed = false }) {
     <div className={`brand ${collapsed ? "brand-small" : ""}`} aria-label="Kobri">
       <div className="brand-mark">
         <svg viewBox="0 0 64 64" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
-          <rect x="2" y="2" width="60" height="60" rx="16" fill="#FFFFFF" />
-          <path
-            d="M18 13H27V27.5L40.5 13H51L35.1 30L51.5 51H40L27 34.6V51H18V13Z"
-            fill="#0B1324"
-          />
-          <path
-            d="M29.4 29.7L42.8 16.2H51L35.4 32.2L29.4 29.7Z"
-            fill="#4169FF"
-          />
-          <path
-            d="M39.2 39.8L45.4 33.6L51.2 40.1L45 46.4L39.2 39.8Z"
-            fill="#4169FF"
-          />
+          <rect x="2" y="2" width="60" height="60" rx="17" fill="#FFFFFF" />
+          <line x1="20" y1="15" x2="20" y2="49" stroke="#0B1324" strokeWidth="8" strokeLinecap="round" />
+          <line x1="23" y1="32" x2="42" y2="16" stroke="#0B1324" strokeWidth="8" strokeLinecap="round" />
+          <line x1="23" y1="32" x2="42" y2="48" stroke="#0B1324" strokeWidth="8" strokeLinecap="round" />
+          <circle cx="45" cy="16" r="5.5" fill="#4169FF" />
         </svg>
       </div>
       {!collapsed && (
