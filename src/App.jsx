@@ -293,7 +293,7 @@ function Ring({ percent }) {
       </svg>
       <div className="ring-label">
         <strong>{safe}%</strong>
-        <span>cobrado</span>
+        <span>{safe === 0 ? "sin cobros" : "cobrado"}</span>
       </div>
     </div>
   )
@@ -1281,7 +1281,7 @@ function App() {
                   />
                 ) : (
                   <div className="table-wrapper">
-                    <table>
+                    <table className="stack-table clients-table">
                       <thead>
                         <tr>
                           <th>Cliente</th>
@@ -1305,7 +1305,7 @@ function App() {
 
                           return (
                             <tr key={client.id}>
-                              <td>
+                              <td className="cell-client">
                                 <div className="client-cell">
                                   <div
                                     className={`client-avatar tone-${avatarTone(
@@ -1321,14 +1321,14 @@ function App() {
                                 </div>
                               </td>
 
-                              <td>
+                              <td className="cell-contact">
                                 <div className="contact-cell">
                                   <strong>{client.phone || "—"}</strong>
                                   <span>{client.email || "Sin correo"}</span>
                                 </div>
                               </td>
 
-                              <td>
+                              <td className="cell-amount">
                                 <div className="amount-cell">
                                   <strong>{money(balance)}</strong>
                                   <span>
@@ -1340,7 +1340,7 @@ function App() {
                                 </div>
                               </td>
 
-                              <td>
+                              <td className="cell-status">
                                 <span
                                   className={`status ${
                                     balance > 0 ? "pending" : "paid"
@@ -1350,7 +1350,7 @@ function App() {
                                 </span>
                               </td>
 
-                              <td>
+                              <td className="cell-action">
                                 <button
                                   className="row-action"
                                   onClick={() => openClientDetail(client)}
@@ -1468,7 +1468,7 @@ function App() {
                   />
                 ) : (
                   <div className="table-wrapper">
-                    <table>
+                    <table className="stack-table payments-table">
                       <thead>
                         <tr>
                           <th>Cliente</th>
@@ -1491,7 +1491,7 @@ function App() {
 
                           return (
                             <tr key={payment.id}>
-                              <td>
+                              <td className="cell-client">
                                 <div className="client-cell">
                                   <div
                                     className={`client-avatar tone-${avatarTone(
@@ -1509,23 +1509,23 @@ function App() {
                                 </div>
                               </td>
 
-                              <td>
+                              <td className="cell-concept">
                                 <strong>{debt?.concept || "—"}</strong>
                               </td>
 
-                              <td>
+                              <td className="cell-amount">
                                 <strong className="payment-amount">
                                   +{money(payment.amount)}
                                 </strong>
                               </td>
 
-                              <td>
+                              <td className="cell-method">
                                 <span className="method-pill">
                                   {payment.method}
                                 </span>
                               </td>
 
-                              <td>
+                              <td className="cell-date">
                                 {new Date(payment.date).toLocaleDateString(
                                   "es-DO",
                                   {
@@ -2174,7 +2174,7 @@ function App() {
 function DebtTable({ rows, onPay, onDetails, detailed = false }) {
   return (
     <div className="table-wrapper">
-      <table className={`data-table ${detailed ? "detailed-table" : "compact-table"}`}>
+      <table className={`data-table stack-table debts-table ${detailed ? "detailed-table" : "compact-table"}`}>
         <thead>
           <tr>
             <th>Cliente</th>
@@ -2189,7 +2189,7 @@ function DebtTable({ rows, onPay, onDetails, detailed = false }) {
         <tbody>
           {rows.map((debt) => (
             <tr key={debt.id}>
-              <td>
+              <td className="cell-client">
                 <div className="client-cell client-identity">
                   <div
                     className={`client-avatar tone-${avatarTone(
@@ -2205,7 +2205,7 @@ function DebtTable({ rows, onPay, onDetails, detailed = false }) {
                 </div>
               </td>
 
-              <td>
+              <td className="cell-concept">
                 <div className="debt-concept">
                   <span className="concept-name">{debt.concept}</span>
                   <button
@@ -2219,7 +2219,7 @@ function DebtTable({ rows, onPay, onDetails, detailed = false }) {
                 </div>
               </td>
 
-              <td>
+              <td className="cell-amount">
                 <div className="amount-cell">
                   <strong>{money(debt.balance)}</strong>
                   {debt.paid > 0 ? (
@@ -2237,7 +2237,7 @@ function DebtTable({ rows, onPay, onDetails, detailed = false }) {
               </td>
 
               {detailed && (
-                <td>
+                <td className="cell-date">
                   <div className="date-cell">
                     <div className="date-copy">
                       <strong>
@@ -2263,14 +2263,14 @@ function DebtTable({ rows, onPay, onDetails, detailed = false }) {
                 </td>
               )}
 
-              <td>
+              <td className="cell-status">
                 <span className={`status ${debt.status.className}`}>
                   <i />
                   {debt.status.label}
                 </span>
               </td>
 
-              <td className="action-cell">
+              <td className="cell-action">
                 {debt.balance > 0 ? (
                   <button
                     className="small-pay-button"
