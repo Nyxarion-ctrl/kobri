@@ -2740,7 +2740,7 @@ html.kobri-dark .modal-backdrop {
 ========================================================= */
 
 .help-modal {
-  width: min(560px, calc(100vw - 28px));
+  width: min(560px, 100%);
 }
 
 .help-modal .modal-header {
@@ -3347,10 +3347,6 @@ html.kobri-dark .help-intro-mark {
 
   .theme-toggle.is-dark .theme-toggle-thumb {
     transform: translateX(26px);
-  }
-
-  .help-modal {
-    width: calc(100vw - 18px);
   }
 
   .help-modal .modal-header {
