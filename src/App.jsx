@@ -180,7 +180,7 @@ function Icon({ name, size = 20 }) {
     settings: (
       <>
         <circle cx="12" cy="12" r="3.2" />
-        <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-1.7 1.7-.06-.06a1.7 1.7 0 0 0-1.88-.34 1.7 1.7 0 0 0-1.04 1.57V22h-2.4v-.09a1.7 1.7 0 0 0-1.04-1.57 1.7 1.7 0 0 0-1.88.34l-.06.06-1.7-1.7.06-.06A1.7 1.7 0 0 0 8.44 17a1.7 1.7 0 0 0-1.57-1.04H6.8v-2.4h.07A1.7 1.7 0 0 0 8.44 12a1.7 1.7 0 0 0-.34-1.88l-.06-.06 1.7-1.7.06.06a1.7 1.7 0 0 0 1.88.34 1.7 1.7 0 0 0 1.04-1.57V7h2.4v.19a1.7 1.7 0 0 0 1.04 1.57 1.7 1.7 0 0 0 1.88-.34l.06-.06 1.7 1.7-.06.06A1.7 1.7 0 0 0 19.4 12c.16.64.71 1.1 1.37 1.1H21v2.4h-.23A1.4 1.4 0 0 0 19.4 15Z" />
+        <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.05.05-1.86 1.86-.05-.05a1.7 1.7 0 0 0-1.88-.34 1.7 1.7 0 0 0-1.04 1.57v.07h-2.64v-.07a1.7 1.7 0 0 0-1.04-1.57 1.7 1.7 0 0 0-1.88.34l-.05.05-1.86-1.86.05-.05A1.7 1.7 0 0 0 7.78 15a1.7 1.7 0 0 0-1.57-1.04h-.07v-2.64h.07A1.7 1.7 0 0 0 7.78 10a1.7 1.7 0 0 0-.34-1.88l-.05-.05 1.86-1.86.05.05a1.7 1.7 0 0 0 1.88.34 1.7 1.7 0 0 0 1.04-1.57v-.07h2.64v.07A1.7 1.7 0 0 0 15.9 6.6a1.7 1.7 0 0 0 1.88-.34l.05-.05 1.86 1.86-.05.05A1.7 1.7 0 0 0 19.3 10a1.7 1.7 0 0 0 1.57 1.04h.07v2.64h-.07A1.7 1.7 0 0 0 19.4 15Z" />
       </>
     ),
     menu: (
@@ -214,6 +214,7 @@ function App() {
   const [showSettingsModal, setShowSettingsModal] = useState(false)
   const [showHelpModal, setShowHelpModal] = useState(false)
   const [showNotifications, setShowNotifications] = useState(false)
+  const [showDebtDetail, setShowDebtDetail] = useState(false)
   const [selectedDebt, setSelectedDebt] = useState(null)
   const [search, setSearch] = useState("")
 
@@ -402,6 +403,11 @@ function App() {
     })
 
     setShowPaymentModal(true)
+  }
+
+  function openDebtDetail(debt) {
+    setSelectedDebt(debt)
+    setShowDebtDetail(true)
   }
 
   function addPayment(event) {
@@ -731,7 +737,7 @@ function App() {
                       action={() => setShowDebtModal(true)}
                     />
                   ) : (
-                    <DebtTable rows={debtRows.slice(0, 5)} onPay={openPayment} />
+                    <DebtTable rows={debtRows.slice(0, 5)} onPay={openPayment} onDetail={openDebtDetail} />
                   )}
                 </div>
 
@@ -954,6 +960,7 @@ function App() {
                   <DebtTable
                     rows={filteredDebts}
                     onPay={openPayment}
+                    onDetail={openDebtDetail}
                     detailed
                   />
                 )}
@@ -1185,19 +1192,50 @@ function App() {
           onClose={() => setShowHelpModal(false)}
         >
           <div className="help-modal-content">
+            <div className="help-intro">
+              <span className="help-intro-badge">K</span>
+              <div>
+                <strong>Empieza en pocos pasos</strong>
+                <p>Kobri está organizado alrededor de tres acciones: registrar clientes, crear deudas y registrar pagos.</p>
+              </div>
+            </div>
+
             <div className="help-topic">
               <span>01</span>
-              <div><strong>Clientes</strong><p>Registra a quién le debes cobrar y mantén sus datos organizados.</p></div>
+              <div>
+                <strong>Clientes</strong>
+                <p>Registra el nombre, teléfono y correo de cada persona o negocio al que necesites cobrar. Desde aquí puedes consultar su saldo pendiente.</p>
+              </div>
             </div>
+
             <div className="help-topic">
               <span>02</span>
-              <div><strong>Deudas</strong><p>Crea una cuenta pendiente con concepto, monto y fecha de vencimiento.</p></div>
+              <div>
+                <strong>Deudas</strong>
+                <p>Crea una cuenta indicando el cliente, concepto, monto y fecha de vencimiento. Usa <b>Ver detalle de la deuda</b> para revisar toda la información antes de cobrar.</p>
+              </div>
             </div>
+
             <div className="help-topic">
               <span>03</span>
-              <div><strong>Pagos</strong><p>Usa Cobrar para registrar cada pago y actualizar automáticamente el saldo.</p></div>
+              <div>
+                <strong>Pagos</strong>
+                <p>Presiona <b>Cobrar</b>, indica cuánto recibiste y selecciona el método de pago. Kobri descuenta ese importe del saldo automáticamente.</p>
+              </div>
             </div>
-            <div className="help-contact">¿Necesitas asistencia? Escríbenos cuando habilitemos el canal de soporte de tu cuenta.</div>
+
+            <div className="help-topic">
+              <span>04</span>
+              <div>
+                <strong>Configuración y notificaciones</strong>
+                <p>La rueda de configuración permite ajustar los datos básicos del negocio y las notificaciones. La campana muestra las deudas que requieren atención.</p>
+              </div>
+            </div>
+
+            <div className="help-contact">
+              <strong>¿Necesitas asistencia?</strong>
+              <span>El centro de ayuda se irá ampliando a medida que agreguemos nuevas funciones a Kobri.</span>
+            </div>
           </div>
         </Modal>
       )}
@@ -1354,6 +1392,90 @@ function App() {
         </Modal>
       )}
 
+      {showDebtDetail && selectedDebt && (
+        <Modal
+          title="Detalle de la deuda"
+          subtitle={`Información de ${selectedDebt.client?.name || "cliente"}.`}
+          onClose={() => {
+            setShowDebtDetail(false)
+            setSelectedDebt(null)
+          }}
+          wide
+        >
+          <div className="debt-detail">
+            <div className="debt-detail-hero">
+              <div className="debt-detail-client">
+                <div className="client-avatar">
+                  {selectedDebt.client?.name?.charAt(0)?.toUpperCase() || "K"}
+                </div>
+                <div>
+                  <strong>{selectedDebt.client?.name || "Cliente"}</strong>
+                  <span>{selectedDebt.client?.phone || "Sin teléfono"}</span>
+                </div>
+              </div>
+              <span className={`status ${selectedDebt.status.className}`}>
+                <i />
+                {selectedDebt.status.label}
+              </span>
+            </div>
+
+            <div className="debt-detail-grid">
+              <div className="debt-detail-item debt-detail-item--wide">
+                <span>Concepto</span>
+                <strong>{selectedDebt.concept}</strong>
+              </div>
+              <div className="debt-detail-item">
+                <span>Monto original</span>
+                <strong>{money(selectedDebt.amount)}</strong>
+              </div>
+              <div className="debt-detail-item">
+                <span>Saldo pendiente</span>
+                <strong>{money(selectedDebt.balance)}</strong>
+              </div>
+              <div className="debt-detail-item">
+                <span>Pagado</span>
+                <strong>{money(selectedDebt.paid)}</strong>
+              </div>
+              <div className="debt-detail-item">
+                <span>Vencimiento</span>
+                <strong>
+                  {new Date(`${selectedDebt.dueDate}T12:00:00`).toLocaleDateString("es-DO", {
+                    day: "2-digit",
+                    month: "long",
+                    year: "numeric",
+                  })}
+                </strong>
+              </div>
+            </div>
+
+            <div className="debt-detail-actions">
+              <button
+                type="button"
+                className="secondary-button"
+                onClick={() => {
+                  setShowDebtDetail(false)
+                  setSelectedDebt(null)
+                }}
+              >
+                Cerrar
+              </button>
+              {selectedDebt.balance > 0 && (
+                <button
+                  type="button"
+                  className="primary-button"
+                  onClick={() => {
+                    setShowDebtDetail(false)
+                    openPayment(selectedDebt)
+                  }}
+                >
+                  Cobrar {money(selectedDebt.balance)}
+                </button>
+              )}
+            </div>
+          </div>
+        </Modal>
+      )}
+
       {showPaymentModal && selectedDebt && (
         <Modal
           title="Registrar pago"
@@ -1432,7 +1554,7 @@ function App() {
   )
 }
 
-function DebtTable({ rows, onPay, detailed = false }) {
+function DebtTable({ rows, onPay, onDetail, detailed = false }) {
   return (
     <div className="table-wrapper">
       <table>
@@ -1456,7 +1578,7 @@ function DebtTable({ rows, onPay, detailed = false }) {
                     {debt.client?.name?.charAt(0) || "K"}
                   </div>
 
-                  <div>
+                  <div className="client-main-info">
                     <strong>{debt.client?.name || "Cliente"}</strong>
                     <span>{debt.client?.phone || "Sin teléfono"}</span>
                   </div>
@@ -1464,10 +1586,17 @@ function DebtTable({ rows, onPay, detailed = false }) {
               </td>
 
               <td>
-                <div className="debt-concept debt-concept--compact">
-                  <strong>{debt.concept}</strong>
-                  <span>Ver detalle de la deuda</span>
-                </div>
+                <button
+                  type="button"
+                  className="debt-detail-trigger"
+                  onClick={() => onDetail(debt)}
+                  aria-label={`Ver detalle de ${debt.concept}`}
+                >
+                  <span className="debt-concept debt-concept--compact">
+                    <strong>{debt.concept}</strong>
+                    <span>Ver detalle de la deuda</span>
+                  </span>
+                </button>
               </td>
 
               <td>
