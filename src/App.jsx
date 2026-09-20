@@ -8,7 +8,12 @@ const money = (value) =>
     minimumFractionDigits: 2,
   }).format(Number(value || 0))
 
-const today = new Date().toISOString().split("T")[0]
+const localDate = (date = new Date()) =>
+  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(
+    date.getDate()
+  ).padStart(2, "0")}`
+
+const today = localDate()
 
 const initialClients = [
   {
@@ -215,6 +220,85 @@ function getStatus(debt, paid) {
   return { label: "Pendiente", className: "pending" }
 }
 
+const DAY_MS = 86400000
+
+function daysUntil(dateString) {
+  const due = new Date(`${dateString}T12:00:00`)
+  const now = new Date(`${today}T12:00:00`)
+  return Math.round((due - now) / DAY_MS)
+}
+
+function dueLabel(days) {
+  if (days < -1) return `Vencida hace ${Math.abs(days)} días`
+  if (days === -1) return "Vencida ayer"
+  if (days === 0) return "Vence hoy"
+  if (days === 1) return "Vence mañana"
+  return `Vence en ${days} días`
+}
+
+function greeting() {
+  const hour = new Date().getHours()
+  if (hour < 12) return "Buenos días"
+  if (hour < 19) return "Buenas tardes"
+  return "Buenas noches"
+}
+
+function avatarTone(name = "") {
+  let sum = 0
+  for (const char of name) sum += char.charCodeAt(0)
+  return sum % 6
+}
+
+function Progress({ value, tone = "accent" }) {
+  const safe = Math.min(Math.max(Number(value) || 0, 0), 100)
+
+  return (
+    <div
+      className={`progress ${tone}`}
+      role="progressbar"
+      aria-valuenow={safe}
+      aria-valuemin={0}
+      aria-valuemax={100}
+    >
+      <i style={{ width: `${safe}%` }} />
+    </div>
+  )
+}
+
+function Ring({ percent }) {
+  const radius = 46
+  const circumference = 2 * Math.PI * radius
+  const safe = Math.min(Math.max(percent, 0), 100)
+  const offset = circumference - (safe / 100) * circumference
+
+  return (
+    <div className="ring" role="img" aria-label={`${safe}% cobrado`}>
+      <svg viewBox="0 0 120 120" aria-hidden="true">
+        <defs>
+          <linearGradient id="kobri-ring" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="#8aa4ff" />
+            <stop offset="100%" stopColor="#4fe0b0" />
+          </linearGradient>
+        </defs>
+        <circle className="ring-track" cx="60" cy="60" r={radius} />
+        <circle
+          className="ring-value"
+          cx="60"
+          cy="60"
+          r={radius}
+          strokeDasharray={circumference}
+          strokeDashoffset={offset}
+          style={{ "--ring-full": circumference }}
+        />
+      </svg>
+      <div className="ring-label">
+        <strong>{safe}%</strong>
+        <span>cobrado</span>
+      </div>
+    </div>
+  )
+}
+
 function App() {
   const [activeView, setActiveView] = useState("dashboard")
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -347,17 +431,55 @@ function App() {
       (sum, debt) => sum + debt.balance,
       0
     )
-    const overdue = debtRows
-      .filter((debt) => debt.status.className === "overdue")
-      .reduce((sum, debt) => sum + debt.balance, 0)
+    const overdueRows = debtRows.filter(
+      (debt) => debt.status.className === "overdue"
+    )
+    const overdue = overdueRows.reduce((sum, debt) => sum + debt.balance, 0)
+    const openCount = debtRows.filter(
+      (debt) => debt.status.className !== "paid"
+    ).length
+    const recovery =
+      totalDebt > 0 ? Math.round((totalPaid / totalDebt) * 100) : 0
+    const clientsWithBalance = new Set(
+      debtRows.filter((debt) => debt.balance > 0).map((debt) => debt.clientId)
+    ).size
 
     return {
       totalDebt,
       totalPaid,
       totalPending,
       overdue,
+      overdueCount: overdueRows.length,
+      openCount,
+      recovery,
+      clientsWithBalance,
     }
   }, [debtRows])
+
+  const portfolioSegments = useMemo(() => {
+    const pendingAmount = Math.max(stats.totalPending - stats.overdue, 0)
+
+    return [
+      { key: "paid", label: "Cobrado", tone: "ok", amount: stats.totalPaid },
+      { key: "pending", label: "Por vencer", tone: "accent", amount: pendingAmount },
+      { key: "overdue", label: "Vencido", tone: "bad", amount: stats.overdue },
+    ].map((item) => ({
+      ...item,
+      percent:
+        stats.totalDebt > 0
+          ? Math.round((item.amount / stats.totalDebt) * 100)
+          : 0,
+    }))
+  }, [stats])
+
+  const todayLabel = useMemo(() => {
+    const text = new Date().toLocaleDateString("es-DO", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+    })
+    return text.charAt(0).toUpperCase() + text.slice(1)
+  }, [])
 
   const filteredClients = clients.filter((client) =>
     `${client.name} ${client.phone} ${client.email}`
@@ -609,7 +731,7 @@ function App() {
         </button>
 
         <nav className="navigation">
-          <div className="nav-label">GESTIÓN</div>
+          <div className="nav-label">Gestión</div>
 
           <button
             className={`nav-item ${
@@ -639,6 +761,11 @@ function App() {
           >
             <Icon name="wallet" />
             <span>Deudas</span>
+            {stats.overdueCount > 0 && (
+              <b className="nav-badge" title="Deudas vencidas">
+                {stats.overdueCount}
+              </b>
+            )}
           </button>
 
           <button
@@ -798,13 +925,9 @@ function App() {
             <>
               <section className="hero">
                 <div>
-                  <div className="eyebrow">VISIÓN GENERAL</div>
-                  <h1>
-                    Buenos días <span>👋</span>
-                  </h1>
-                  <p>
-                    {pageTitle()[1]}
-                  </p>
+                  <p className="hero-date">{todayLabel}</p>
+                  <h1>{greeting()}</h1>
+                  <p className="hero-sub">{pageTitle()[1]}</p>
                 </div>
 
                 <button
@@ -816,37 +939,41 @@ function App() {
                 </button>
               </section>
 
-              <section className="stats-grid">
-                <div className="stat-card">
-                  <div className="stat-head">
-                    <span>Por cobrar</span>
-                    <div className="stat-icon blue">
-                      <Icon name="wallet" size={18} />
+              <section className="overview">
+                <article className="feature-card">
+                  <div className="feature-main">
+                    <span className="feature-label">Por cobrar</span>
+                    <strong className="feature-amount">
+                      {money(stats.totalPending)}
+                    </strong>
+                    <p className="feature-sub">
+                      {stats.openCount === 0
+                        ? "No tienes deudas abiertas."
+                        : `${stats.openCount} ${
+                            stats.openCount === 1
+                              ? "deuda abierta"
+                              : "deudas abiertas"
+                          } esperando cobro.`}
+                    </p>
+
+                    <div className="feature-meter">
+                      <Progress value={stats.recovery} tone="on-dark" />
+                      <div className="feature-legend">
+                        <span>
+                          <i className="dot ok" />
+                          Cobrado {money(stats.totalPaid)}
+                        </span>
+                        <span>Total registrado {money(stats.totalDebt)}</span>
+                      </div>
                     </div>
                   </div>
-                  <strong>{money(stats.totalPending)}</strong>
-                  <div className="stat-footer">
-                    <span className="neutral">Saldo pendiente</span>
-                  </div>
-                </div>
 
-                <div className="stat-card">
-                  <div className="stat-head">
-                    <span>Cobrado</span>
-                    <div className="stat-icon green">
-                      <Icon name="check" size={18} />
-                    </div>
-                  </div>
-                  <strong>{money(stats.totalPaid)}</strong>
-                  <div className="stat-footer">
-                    <span className="positive">
-                      <Icon name="trend" size={13} />
-                      Pagos registrados
-                    </span>
-                  </div>
-                </div>
+                  <Ring percent={stats.recovery} />
+                </article>
 
-                <div className="stat-card">
+                <article
+                  className={`stat-card ${stats.overdue > 0 ? "has-alert" : ""}`}
+                >
                   <div className="stat-head">
                     <span>Vencido</span>
                     <div className="stat-icon red">
@@ -855,11 +982,21 @@ function App() {
                   </div>
                   <strong>{money(stats.overdue)}</strong>
                   <div className="stat-footer">
-                    <span className="danger-text">Requiere atención</span>
+                    <span
+                      className={stats.overdue > 0 ? "danger-text" : "neutral"}
+                    >
+                      {stats.overdueCount > 0
+                        ? `${stats.overdueCount} ${
+                            stats.overdueCount === 1
+                              ? "deuda requiere"
+                              : "deudas requieren"
+                          } atención`
+                        : "Sin deudas vencidas"}
+                    </span>
                   </div>
-                </div>
+                </article>
 
-                <div className="stat-card">
+                <article className="stat-card">
                   <div className="stat-head">
                     <span>Clientes</span>
                     <div className="stat-icon purple">
@@ -868,86 +1005,100 @@ function App() {
                   </div>
                   <strong>{clients.length}</strong>
                   <div className="stat-footer">
-                    <span className="neutral">Clientes registrados</span>
+                    <span className="neutral">
+                      {stats.clientsWithBalance} con saldo pendiente
+                    </span>
                   </div>
+                </article>
+              </section>
+
+              <section className="panel table-block">
+                <div className="panel-header">
+                  <div>
+                    <h2>Deudas recientes</h2>
+                    <p>Las últimas cuentas registradas.</p>
+                  </div>
+
+                  <button
+                    className="text-button"
+                    onClick={() => navigate("debts")}
+                  >
+                    Ver todas
+                    <Icon name="arrow" size={16} />
+                  </button>
                 </div>
+
+                {debtRows.length === 0 ? (
+                  <EmptyState
+                    icon="wallet"
+                    title="Todavía no tienes deudas"
+                    text="Crea tu primera deuda para comenzar a controlar tus cobros."
+                    action={() => setShowDebtModal(true)}
+                  />
+                ) : (
+                  <DebtTable
+                    rows={debtRows.slice(0, 5)}
+                    onPay={openPayment}
+                    onDetails={openDebtDetail}
+                  />
+                )}
               </section>
 
               <section className="dashboard-grid">
-                <div className="panel large-panel">
-                  <div className="panel-header">
-                    <div>
-                      <h2>Deudas recientes</h2>
-                      <p>Las últimas cuentas registradas.</p>
-                    </div>
-
-                    <button
-                      className="text-button"
-                      onClick={() => navigate("debts")}
-                    >
-                      Ver todas
-                      <Icon name="arrow" size={16} />
-                    </button>
-                  </div>
-
-                  {debtRows.length === 0 ? (
-                    <EmptyState
-                      icon="wallet"
-                      title="Todavía no tienes deudas"
-                      text="Crea tu primera deuda para comenzar a controlar tus cobros."
-                      action={() => setShowDebtModal(true)}
-                    />
-                  ) : (
-                    <DebtTable
-                      rows={debtRows.slice(0, 5)}
-                      onPay={openPayment}
-                      onDetails={openDebtDetail}
-                    />
-                  )}
-                </div>
-
                 <div className="panel">
                   <div className="panel-header">
                     <div>
                       <h2>Próximos vencimientos</h2>
-                      <p>Deudas pendientes.</p>
+                      <p>Deudas pendientes ordenadas por fecha.</p>
                     </div>
                   </div>
 
                   <div className="upcoming-list">
                     {debtRows
                       .filter((item) => item.status.className !== "paid")
-                      .sort((a, b) =>
-                        a.dueDate.localeCompare(b.dueDate)
-                      )
+                      .sort((a, b) => a.dueDate.localeCompare(b.dueDate))
                       .slice(0, 5)
-                      .map((debt) => (
-                        <div className="upcoming-item" key={debt.id}>
-                          <div className="date-box">
-                            <strong>
-                              {new Date(
-                                `${debt.dueDate}T12:00:00`
-                              ).getDate()}
-                            </strong>
-                            <span>
-                              {new Date(
-                                `${debt.dueDate}T12:00:00`
-                              ).toLocaleDateString("es-DO", {
-                                month: "short",
-                              })}
-                            </span>
-                          </div>
+                      .map((debt) => {
+                        const days = daysUntil(debt.dueDate)
+                        const tone =
+                          days < 0 ? "late" : days <= 3 ? "soon" : "calm"
 
-                          <div className="upcoming-info">
-                            <strong>{debt.client?.name}</strong>
-                            <span>{debt.concept}</span>
-                          </div>
+                        return (
+                          <div
+                            className={`upcoming-item ${tone}`}
+                            key={debt.id}
+                          >
+                            <div className="date-box">
+                              <strong>
+                                {new Date(
+                                  `${debt.dueDate}T12:00:00`
+                                ).getDate()}
+                              </strong>
+                              <span>
+                                {new Date(
+                                  `${debt.dueDate}T12:00:00`
+                                ).toLocaleDateString("es-DO", {
+                                  month: "short",
+                                })}
+                              </span>
+                            </div>
 
-                          <strong className="upcoming-amount">
-                            {money(debt.balance)}
-                          </strong>
-                        </div>
-                      ))}
+                            <div className="upcoming-info">
+                              <strong>{debt.client?.name}</strong>
+                              <span>{debt.concept}</span>
+                            </div>
+
+                            <div className="upcoming-side">
+                              <strong className="upcoming-amount">
+                                {money(debt.balance)}
+                              </strong>
+                              <span className={`due-chip ${tone}`}>
+                                {dueLabel(days)}
+                              </span>
+                            </div>
+                          </div>
+                        )
+                      })}
 
                     {debtRows.filter(
                       (item) => item.status.className !== "paid"
@@ -962,6 +1113,129 @@ function App() {
                     )}
                   </div>
                 </div>
+
+                <div className="stack">
+                  <div className="panel">
+                    <div className="panel-header">
+                      <div>
+                        <h2>Estado de la cartera</h2>
+                        <p>Cómo se reparte lo que has registrado.</p>
+                      </div>
+                    </div>
+
+                    <div className="portfolio">
+                      {stats.totalDebt === 0 ? (
+                        <div className="simple-empty compact">
+                          <div className="empty-circle">
+                            <Icon name="wallet" size={20} />
+                          </div>
+                          <strong>Sin datos todavía</strong>
+                          <span>Registra una deuda para ver el reparto.</span>
+                        </div>
+                      ) : (
+                        <>
+                          <div
+                            className="segbar"
+                            role="img"
+                            aria-label="Distribución de la cartera"
+                          >
+                            {portfolioSegments
+                              .filter((item) => item.amount > 0)
+                              .map((item) => (
+                                <i
+                                  key={item.key}
+                                  className={item.tone}
+                                  style={{
+                                    width: `${
+                                      (item.amount / stats.totalDebt) * 100
+                                    }%`,
+                                  }}
+                                />
+                              ))}
+                          </div>
+
+                          <ul className="legend-list">
+                            {portfolioSegments.map((item) => (
+                              <li key={item.key}>
+                                <i className={`dot ${item.tone}`} />
+                                <span className="legend-name">
+                                  {item.label}
+                                </span>
+                                <strong>{money(item.amount)}</strong>
+                                <em>{item.percent}%</em>
+                              </li>
+                            ))}
+                          </ul>
+                        </>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="panel">
+                    <div className="panel-header">
+                      <div>
+                        <h2>Pagos recientes</h2>
+                        <p>Los últimos cobros registrados.</p>
+                      </div>
+
+                      {payments.length > 0 && (
+                        <button
+                          className="text-button"
+                          onClick={() => navigate("payments")}
+                        >
+                          Ver todos
+                          <Icon name="arrow" size={16} />
+                        </button>
+                      )}
+                    </div>
+
+                    {payments.length === 0 ? (
+                      <div className="simple-empty compact">
+                        <div className="empty-circle">
+                          <Icon name="card" size={20} />
+                        </div>
+                        <strong>Aún no hay pagos</strong>
+                        <span>Cuando cobres una deuda aparecerá aquí.</span>
+                      </div>
+                    ) : (
+                      <ul className="activity-list">
+                        {payments.slice(0, 4).map((payment) => {
+                          const debt = debts.find(
+                            (item) => item.id === payment.debtId
+                          )
+                          const client = clients.find(
+                            (item) => item.id === debt?.clientId
+                          )
+
+                          return (
+                            <li className="activity-item" key={payment.id}>
+                              <div
+                                className={`client-avatar tone-${avatarTone(
+                                  client?.name
+                                )}`}
+                              >
+                                {client?.name?.charAt(0) || "K"}
+                              </div>
+                              <div className="activity-copy">
+                                <strong>{client?.name || "Cliente"}</strong>
+                                <span>
+                                  {payment.method},{" "}
+                                  {new Date(payment.date).toLocaleDateString(
+                                    "es-DO",
+                                    { day: "2-digit", month: "short" }
+                                  )}
+                                </span>
+                              </div>
+                              <strong className="activity-amount">
+                                +{money(payment.amount)}
+                              </strong>
+                            </li>
+                          )
+                        })}
+                      </ul>
+                    )}
+                  </div>
+                </div>
               </section>
             </>
           )}
@@ -970,7 +1244,6 @@ function App() {
             <section className="page-section">
               <section className="page-heading">
                 <div>
-                  <div className="eyebrow">GESTIÓN DE CLIENTES</div>
                   <h1>Clientes</h1>
                   <p>{pageTitle()[1]}</p>
                 </div>
@@ -1011,10 +1284,10 @@ function App() {
                     <table>
                       <thead>
                         <tr>
-                          <th>CLIENTE</th>
-                          <th>CONTACTO</th>
-                          <th>DEUDA</th>
-                          <th>ESTADO</th>
+                          <th>Cliente</th>
+                          <th>Contacto</th>
+                          <th>Deuda</th>
+                          <th>Estado</th>
                           <th />
                         </tr>
                       </thead>
@@ -1034,10 +1307,12 @@ function App() {
                             <tr key={client.id}>
                               <td>
                                 <div className="client-cell">
-                                  <div className="client-avatar">
-                                    {client.name
-                                      .charAt(0)
-                                      .toUpperCase()}
+                                  <div
+                                    className={`client-avatar tone-${avatarTone(
+                                      client.name
+                                    )}`}
+                                  >
+                                    {client.name.charAt(0).toUpperCase()}
                                   </div>
                                   <div className="client-copy">
                                     <strong>{client.name}</strong>
@@ -1054,7 +1329,15 @@ function App() {
                               </td>
 
                               <td>
-                                <strong>{money(balance)}</strong>
+                                <div className="amount-cell">
+                                  <strong>{money(balance)}</strong>
+                                  <span>
+                                    {clientDebts.length}{" "}
+                                    {clientDebts.length === 1
+                                      ? "deuda"
+                                      : "deudas"}
+                                  </span>
+                                </div>
                               </td>
 
                               <td>
@@ -1091,7 +1374,6 @@ function App() {
             <section className="page-section">
               <section className="page-heading">
                 <div>
-                  <div className="eyebrow">CUENTAS POR COBRAR</div>
                   <h1>Deudas</h1>
                   <p>{pageTitle()[1]}</p>
                 </div>
@@ -1144,7 +1426,6 @@ function App() {
             <section className="page-section">
               <section className="page-heading">
                 <div>
-                  <div className="eyebrow">MOVIMIENTOS</div>
                   <h1>Pagos</h1>
                   <p>{pageTitle()[1]}</p>
                 </div>
@@ -1190,11 +1471,11 @@ function App() {
                     <table>
                       <thead>
                         <tr>
-                          <th>CLIENTE</th>
-                          <th>CONCEPTO</th>
-                          <th>MONTO</th>
-                          <th>MÉTODO</th>
-                          <th>FECHA</th>
+                          <th>Cliente</th>
+                          <th>Concepto</th>
+                          <th>Monto</th>
+                          <th>Método</th>
+                          <th>Fecha</th>
                         </tr>
                       </thead>
 
@@ -1212,7 +1493,11 @@ function App() {
                             <tr key={payment.id}>
                               <td>
                                 <div className="client-cell">
-                                  <div className="client-avatar">
+                                  <div
+                                    className={`client-avatar tone-${avatarTone(
+                                      client?.name
+                                    )}`}
+                                  >
                                     {client?.name?.charAt(0) || "K"}
                                   </div>
                                   <div className="client-copy">
@@ -1853,7 +2138,7 @@ function App() {
               { name: "Negocio", price: "RD$599", note: "Para equipos", features: ["Todo lo de Pro", "Usuarios y permisos", "Funciones avanzadas"] },
             ].map((plan) => (
               <div className={`plan-card ${currentPlan === plan.name ? "selected" : ""}`} key={plan.name}>
-                {currentPlan === plan.name && <span className="plan-current">ACTUAL</span>}
+                {currentPlan === plan.name && <span className="plan-current">Actual</span>}
                 <div className="plan-card-top">
                   <div>
                     <strong>{plan.name}</strong>
@@ -1892,11 +2177,11 @@ function DebtTable({ rows, onPay, onDetails, detailed = false }) {
       <table className={`data-table ${detailed ? "detailed-table" : "compact-table"}`}>
         <thead>
           <tr>
-            <th>CLIENTE</th>
-            <th>CONCEPTO</th>
-            <th>MONTO</th>
-            {detailed && <th>VENCIMIENTO</th>}
-            <th>ESTADO</th>
+            <th>Cliente</th>
+            <th>Concepto</th>
+            <th>Monto</th>
+            {detailed && <th>Vencimiento</th>}
+            <th>Estado</th>
             <th />
           </tr>
         </thead>
@@ -1906,7 +2191,11 @@ function DebtTable({ rows, onPay, onDetails, detailed = false }) {
             <tr key={debt.id}>
               <td>
                 <div className="client-cell client-identity">
-                  <div className="client-avatar">
+                  <div
+                    className={`client-avatar tone-${avatarTone(
+                      debt.client?.name
+                    )}`}
+                  >
                     {debt.client?.name?.charAt(0) || "K"}
                   </div>
                   <div className="client-copy">
@@ -1933,8 +2222,16 @@ function DebtTable({ rows, onPay, onDetails, detailed = false }) {
               <td>
                 <div className="amount-cell">
                   <strong>{money(debt.balance)}</strong>
-                  {debt.paid > 0 && (
-                    <span>de {money(debt.amount)}</span>
+                  {debt.paid > 0 ? (
+                    <>
+                      <Progress
+                        value={Math.round((debt.paid / debt.amount) * 100)}
+                        tone="ok"
+                      />
+                      <span>de {money(debt.amount)}</span>
+                    </>
+                  ) : (
+                    <span>Sin pagos aún</span>
                   )}
                 </div>
               </td>
@@ -1942,14 +2239,26 @@ function DebtTable({ rows, onPay, onDetails, detailed = false }) {
               {detailed && (
                 <td>
                   <div className="date-cell">
-                    <Icon name="calendar" size={15} />
-                    {new Date(
-                      `${debt.dueDate}T12:00:00`
-                    ).toLocaleDateString("es-DO", {
-                      day: "2-digit",
-                      month: "short",
-                      year: "numeric",
-                    })}
+                    <div className="date-copy">
+                      <strong>
+                        {new Date(
+                          `${debt.dueDate}T12:00:00`
+                        ).toLocaleDateString("es-DO", {
+                          day: "2-digit",
+                          month: "short",
+                          year: "numeric",
+                        })}
+                      </strong>
+                      <span
+                        className={
+                          debt.status.className === "overdue" ? "is-late" : ""
+                        }
+                      >
+                        {debt.balance > 0
+                          ? dueLabel(daysUntil(debt.dueDate))
+                          : "Pagada"}
+                      </span>
+                    </div>
                   </div>
                 </td>
               )}
