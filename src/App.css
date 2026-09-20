@@ -3,7 +3,7 @@
 :root {
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   color: #101828;
-  background: #f7f8fc;
+  background: #f3f5f8;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
 
@@ -32,8 +32,8 @@
   --border: #e7eaf0;
   --border-dark: #dfe3ea;
 
-  --surface: #f7f8fb;
-  --surface-soft: #f1f3f7;
+  --surface: #f9fafc;
+  --surface-soft: #f0f2f6;
 
   --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.04);
   --shadow-md: 0 8px 24px rgba(16, 24, 40, 0.06);
@@ -59,7 +59,7 @@ body,
 
 body {
   min-width: 320px;
-  background: #f7f8fc;
+  background: #f3f5f8;
   color: var(--text);
 }
 
@@ -88,7 +88,7 @@ select:focus-visible {
 .app-shell {
   min-height: 100vh;
   display: flex;
-  background: #f7f8fc;
+  background: #f3f5f8;
 }
 
 /* =========================================
@@ -681,7 +681,7 @@ select:focus-visible {
 table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 620px;
+  min-width: 650px;
 }
 
 th {
@@ -1505,53 +1505,24 @@ tbody tr:hover {
     width: 100%;
   }
 }
+
 /* =========================================
-   KOBRI INTERACTIVE PANELS
+   KOBRI REFINEMENT PACK — 2026
+   Compact layout, premium controls and functional utilities
 ========================================= */
-.top-profile-button{border:0;background:transparent;cursor:pointer;text-align:left}
-.profile-mini-button{width:100%;border:0;cursor:pointer;text-align:left;color:inherit}
-.notification-panel{position:absolute;top:58px;right:76px;width:350px;max-width:calc(100vw - 30px);background:#fff;border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow-lg);overflow:hidden;z-index:100}
-.notification-header{padding:16px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-.notification-header strong,.notification-header span{display:block}.notification-header strong{color:var(--navy);font-size:13px}.notification-header span{margin-top:3px;color:var(--text-muted);font-size:10px}.notification-header button{border:0;background:transparent;color:var(--blue);font-size:10px;font-weight:700;cursor:pointer}
-.notification-list{max-height:360px;overflow-y:auto}.notification-item{width:100%;display:flex;align-items:flex-start;gap:11px;padding:14px 18px;border:0;border-bottom:1px solid #f0f2f6;background:#fff;text-align:left;cursor:pointer}.notification-item:hover{background:#f8f9fc}.notification-item.unread{background:#f8faff}.notification-item>div:last-child{min-width:0}.notification-item strong,.notification-item span{display:block}.notification-item strong{color:var(--navy);font-size:11px}.notification-item span{margin-top:4px;color:var(--text-secondary);font-size:10px;line-height:1.45}.notification-dot{width:8px;height:8px;margin-top:4px;flex:0 0 8px;border-radius:50%;background:var(--blue)}.notification-dot.overdue{background:var(--red)}.notification-dot.payment{background:var(--green)}.notification-empty{padding:34px 20px;display:flex;flex-direction:column;align-items:center;text-align:center;color:var(--text-muted)}.notification-empty strong{margin-top:10px;color:var(--navy);font-size:12px}.notification-empty span{margin-top:4px;font-size:10px}.notification i{display:grid;place-items:center;min-width:15px;height:15px;padding:0 3px;border-radius:999px;background:var(--red);color:#fff;font-size:8px;font-style:normal;font-weight:800;position:absolute;top:5px;right:4px}
-.debt-concept-button{width:100%;border:0;background:transparent;padding:0;text-align:left;cursor:pointer}.debt-concept-button:hover strong{color:var(--blue)}
-.detail-card,.account-profile{display:flex;align-items:center;gap:14px;padding:15px;border:1px solid var(--border);border-radius:12px;background:var(--surface-soft)}.detail-avatar,.account-avatar{width:46px;height:46px;flex:0 0 46px;display:grid;place-items:center;border-radius:13px;background:var(--navy);color:#fff;font-size:17px;font-weight:800}.detail-card strong,.account-profile strong{display:block;color:var(--navy);font-size:13px}.detail-card span,.account-profile span{display:block;margin-top:4px;color:var(--text-secondary);font-size:10px}.detail-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px}.detail-grid>div{padding:14px;border:1px solid var(--border);border-radius:11px;background:#fff}.detail-grid span,.detail-grid strong{display:block}.detail-grid span{color:var(--text-muted);font-size:9px}.detail-grid strong{margin-top:6px;color:var(--navy);font-size:15px}.detail-date{margin-top:12px;padding:12px 14px;display:flex;align-items:center;gap:8px;border-radius:10px;background:var(--blue-soft);color:var(--navy);font-size:10px;font-weight:600}.detail-actions{margin-top:18px;display:flex;justify-content:flex-end;gap:9px}.settings-check{display:flex!important;flex-direction:row!important;align-items:center;gap:9px;padding:12px;border:1px solid var(--border);border-radius:10px;background:var(--surface-soft)}.settings-check input{width:16px;height:16px}.settings-check span{color:var(--text-secondary);font-size:10px}
-.date-box{width:42px;height:44px;flex:0 0 42px;border-radius:10px;background:#f5f7ff;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:5px 4px;text-align:center;box-sizing:border-box}.date-box strong{width:100%;display:flex;align-items:center;justify-content:center;color:var(--navy);font-size:12px;line-height:1;font-weight:800;text-align:center}.date-box span{width:100%;display:flex;align-items:center;justify-content:center;color:var(--blue);font-size:7px;line-height:1;text-transform:uppercase;margin-top:4px;font-weight:700;letter-spacing:.2px;text-align:center}
-@media (max-width:640px){.notification-panel{right:10px;width:calc(100vw - 20px)}.detail-grid{grid-template-columns:1fr}}
 
-/* =========================================================
-   KOBRI PREMIUM UI V2
-   Ajustes generales: superficies, alineación, navegación,
-   logo, fechas, cuenta, notificaciones y planes.
-========================================================= */
-:root {
-  --page: #eef2f6;
-  --surface: #fbfcfe;
-  --surface-soft: #f4f6fa;
-  --surface-raised: #f8fafc;
-  --border: #dfe4ec;
-  --border-dark: #d4dae4;
-  --shadow-sm: 0 2px 7px rgba(16, 24, 40, 0.055);
-  --shadow-md: 0 10px 28px rgba(16, 24, 40, 0.075);
-  --shadow-lg: 0 24px 55px rgba(16, 24, 40, 0.17);
-}
-
-body,
-.app-shell {
-  background: var(--page);
-}
-
-/* Logo más limpio y coherente con la identidad */
+/* Premium brand */
 .brand {
-  gap: 12px;
+  gap: 10px;
 }
 
 .brand-mark {
   width: 38px;
   height: 38px;
-  border-radius: 12px;
-  background: #fff;
-  box-shadow: 0 7px 18px rgba(0, 0, 0, 0.18), inset 0 0 0 1px rgba(11, 19, 36, 0.05);
+  border-radius: 11px;
+  background: #f8faff;
+  border: 1px solid rgba(255,255,255,.16);
+  box-shadow: 0 7px 20px rgba(0,0,0,.18);
 }
 
 .brand-mark svg {
@@ -1560,703 +1531,543 @@ body,
 }
 
 .brand-copy {
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   line-height: 1;
 }
 
 .brand-copy > span {
-  color: #fff;
-  font-size: 20px;
-  font-weight: 850;
+  font-size: 19px;
+  font-weight: 800;
   letter-spacing: -0.9px;
+  color: #fff;
 }
 
 .brand-copy small {
-  margin-top: 5px;
-  color: #71809a;
-  font-size: 6.5px;
-  font-weight: 700;
-  letter-spacing: 1.05px;
+  margin-top: 4px;
+  color: #72809a;
+  font-size: 6px;
+  font-weight: 800;
+  letter-spacing: 1.25px;
+  white-space: nowrap;
 }
 
-/* Una sola tarjeta de negocio en la parte superior izquierda */
-.workspace-button {
+/* Only the workspace card and top-right profile remain. */
+.workspace {
   width: calc(100% - 8px);
-  border: 1px solid rgba(255, 255, 255, 0.10);
-  color: inherit;
-  font: inherit;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.045);
+  color: #fff;
   text-align: left;
   cursor: pointer;
-  transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+  transition: .18s ease;
 }
 
-.workspace-button:hover {
-  background: rgba(255, 255, 255, 0.075);
-  border-color: rgba(255, 255, 255, 0.16);
-  transform: translateY(-1px);
+.workspace:hover {
+  background: rgba(255,255,255,.075);
+  border-color: rgba(255,255,255,.15);
 }
 
-.workspace-button > svg {
-  color: #8794aa;
-  transition: transform 0.18s ease;
+.workspace > svg {
+  flex: 0 0 auto;
+  color: #8d9ab1;
 }
 
-.workspace-button:hover > svg {
-  transform: translateX(2px);
-  color: #c8d2e5;
-}
-
-/* No mostrar la antigua tarjeta duplicada inferior */
 .sidebar-bottom {
   margin-top: auto;
-  padding-bottom: 4px;
 }
 
-/* Barra superior más refinada */
-.topbar {
-  background: rgba(248, 250, 252, 0.94);
-  border-bottom-color: #dce2ea;
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
-}
-
-.topbar-actions {
+.help-card {
+  width: calc(100% - 8px);
+  margin: 0 4px;
   position: relative;
+  border: 1px solid rgba(65,105,255,.22);
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: .18s ease;
+}
+
+.help-card:hover {
+  transform: translateY(-1px);
+  background: rgba(65,105,255,.15);
+  border-color: rgba(65,105,255,.35);
+}
+
+.help-card > div:nth-child(2) {
+  flex: 1;
+  min-width: 0;
+}
+
+.help-card > svg {
+  flex: 0 0 auto;
+  align-self: center;
+  color: #8291af;
+}
+
+/* Topbar utility buttons */
+.topbar-actions {
   gap: 10px;
+}
+
+.notification-wrap {
+  position: relative;
 }
 
 .icon-button {
   width: 40px;
   height: 40px;
-  border-radius: 12px;
-  background: #f7f9fc;
-  border-color: #dce2ea;
-  color: #536079;
-  box-shadow: 0 2px 7px rgba(16, 24, 40, 0.035);
+  border-radius: 11px;
+  background: var(--surface);
+  box-shadow: 0 2px 8px rgba(16,24,40,.025);
 }
 
 .icon-button:hover,
-.icon-button:focus-visible {
-  background: #fff;
-  border-color: #cbd3df;
+.icon-button.is-open {
+  background: #f1f4fa;
+  border-color: #d7ddea;
   color: var(--navy);
-  transform: translateY(-1px);
 }
 
 .notification i {
-  top: 5px;
-  right: 4px;
-  width: 8px;
-  height: 8px;
-  min-width: 8px;
-  padding: 0;
-  border: 2px solid #f7f9fc;
+  width: 7px;
+  height: 7px;
+  top: 7px;
+  right: 8px;
+  background: #e5484d;
+  border: 2px solid var(--surface);
+}
+
+.settings-button svg {
+  stroke-width: 1.7;
 }
 
 .top-profile {
   min-height: 40px;
-  margin-left: 2px;
-  padding-left: 13px;
-  border-left-color: #dce2ea;
+  border: 0;
+  padding: 0 0 0 17px;
+  border-left: 1px solid var(--border);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition: .18s ease;
 }
 
-.top-profile-button:hover .top-avatar {
-  box-shadow: 0 0 0 4px rgba(65, 105, 255, 0.08);
+.top-profile:hover .top-avatar {
+  transform: scale(1.03);
 }
 
-/* Más profundidad sin convertir la interfaz en una caja blanca */
-.page-content {
-  max-width: 1400px;
-  padding-top: 42px;
+.top-avatar {
+  transition: .18s ease;
 }
 
-.stat-card,
-.panel,
-.table-panel {
-  background: var(--surface);
-  border-color: #dce2ea;
-  box-shadow: var(--shadow-sm);
-}
-
-.stat-card:hover,
-.panel:hover {
-  border-color: #d4dbe5;
-  box-shadow: var(--shadow-md);
-}
-
-.stat-card {
-  padding: 19px 20px;
-}
-
-.panel-header {
-  background: rgba(248, 250, 252, 0.72);
-}
-
-.table-wrapper {
-  background: var(--surface);
-}
-
-table thead {
-  background: #f3f5f8;
-}
-
-table th {
-  color: #71809a;
-}
-
-table tbody tr:hover {
-  background: #f7f9fc;
-}
-
-/* Fechas: número y mes perfectamente centrados */
-.date-box {
-  width: 48px !important;
-  height: 52px !important;
-  min-width: 48px;
-  flex: 0 0 48px;
-  padding: 7px 5px !important;
-  border: 1px solid #e1e6ef;
-  background: #f0f4fa !important;
-  border-radius: 11px;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  text-align: center !important;
+/* Notification popover */
+.notification-popover {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 315px;
   overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+  box-shadow: 0 18px 42px rgba(16,24,40,.14);
+  z-index: 100;
 }
 
-.date-box strong {
-  width: 100% !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  text-align: center !important;
-  line-height: 1.1 !important;
-  font-size: 13px !important;
-  letter-spacing: -0.15px;
-}
-
-.date-box span {
-  width: 100% !important;
-  margin: 4px 0 0 !important;
-  padding: 0 !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  text-align: center !important;
-  line-height: 1 !important;
-  font-size: 7.5px !important;
-  letter-spacing: 0.45px;
-}
-
-.upcoming-item {
-  align-items: center;
-  gap: 13px;
-}
-
-.upcoming-info {
-  min-width: 0;
-  flex: 1;
-}
-
-.upcoming-amount {
-  white-space: nowrap;
-}
-
-/* Alineación de la fecha dentro de la tabla de deudas */
-.date-cell {
-  justify-content: flex-start;
-  min-width: 118px;
-  color: #536079;
-}
-
-/* Modales: más compactos, centrados y consistentes */
-.modal-backdrop {
-  background: rgba(11, 19, 36, 0.58);
-  backdrop-filter: blur(5px);
-}
-
-.modal {
-  background: #f9fafc;
-  border: 1px solid rgba(255, 255, 255, 0.75);
-  box-shadow: 0 30px 80px rgba(11, 19, 36, 0.24);
-}
-
-.modal-header {
-  background: #f9fafc;
-  border-bottom-color: #e1e5eb;
-}
-
-.modal-close {
-  background: #eef1f5;
-  border-color: #e0e4ea;
-}
-
-.modal-close:hover {
-  background: #e6eaf0;
-}
-
-.form-grid input,
-.form-grid select,
-.input-money {
-  background: #fff;
-  border-color: #d7dde6;
-}
-
-.settings-check {
-  background: #f1f4f8 !important;
-  border-color: #dce2ea !important;
-}
-
-.account-profile,
-.detail-card {
-  background: #eef2f6 !important;
-  border-color: #dce2ea !important;
-}
-
-.detail-grid > div {
-  background: #f5f7fa;
-  border-color: #dce2ea;
-}
-
-.account-actions {
-  margin-top: 18px;
+.popover-head {
+  padding: 14px 15px 12px;
   display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
 }
 
-/* Notificaciones: panel alineado exactamente con los controles superiores */
-.notification-panel {
-  top: 50px;
-  right: 104px;
-  width: 365px;
-  background: #f9fafc;
-  border-color: #dce2ea;
-  box-shadow: var(--shadow-lg);
+.popover-head strong {
+  display: block;
+  color: var(--navy);
+  font-size: 12px;
 }
 
-.notification-header {
-  background: #f3f5f8;
-  border-bottom-color: #dde3eb;
+.popover-head span {
+  display: block;
+  color: var(--text-muted);
+  font-size: 9px;
+  margin-top: 3px;
+}
+
+.popover-head button {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 8px;
+  background: var(--surface-soft);
+  color: var(--text-secondary);
+}
+
+.notification-list {
+  padding: 5px;
 }
 
 .notification-item {
-  background: #f9fafc;
-  border-bottom-color: #e7ebf0;
-}
-
-.notification-item:hover,
-.notification-item.unread {
-  background: #f0f4fa;
-}
-
-/* Planes: interfaz preparada para futura suscripción real */
-.plans-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.plan-card {
-  position: relative;
+  width: 100%;
   display: flex;
-  flex-direction: column;
-  min-width: 0;
-  padding: 17px;
-  border: 1px solid #dce2ea;
-  border-radius: 14px;
-  background: #f3f5f8;
-  box-shadow: 0 2px 7px rgba(16, 24, 40, 0.035);
-}
-
-.plan-card.selected {
-  border-color: rgba(65, 105, 255, 0.38);
-  background: #eef2ff;
-  box-shadow: 0 8px 22px rgba(65, 105, 255, 0.09);
-}
-
-.plan-current {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  padding: 4px 7px;
-  border-radius: 999px;
-  background: #dfe6ff;
-  color: #3154df;
-  font-size: 7px;
-  font-weight: 800;
-  letter-spacing: 0.5px;
-}
-
-.plan-card-top {
-  display: flex;
-  justify-content: space-between;
+  align-items: flex-start;
   gap: 10px;
+  padding: 11px 10px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  text-align: left;
 }
 
-.plan-card-top > div {
+.notification-item:hover {
+  background: var(--surface-soft);
+}
+
+.notification-item > span:nth-child(2) {
   min-width: 0;
 }
 
-.plan-card-top strong,
-.plan-card-top span {
+.notification-item strong,
+.notification-item small {
   display: block;
 }
 
-.plan-card-top strong {
-  color: var(--navy);
-  font-size: 13px;
-  font-weight: 800;
+.notification-item strong {
+  color: #344054;
+  font-size: 10px;
 }
 
-.plan-card-top span {
-  margin-top: 4px;
-  color: var(--text-secondary);
-  font-size: 8px;
-  line-height: 1.4;
-}
-
-.plan-card-top b {
-  color: var(--navy);
-  font-size: 16px;
-  white-space: nowrap;
-}
-
-.plan-card-top b small {
+.notification-item small {
   color: var(--text-muted);
-  font-size: 7px;
+  font-size: 9px;
+  margin-top: 3px;
+}
+
+.notification-dot {
+  width: 7px;
+  height: 7px;
+  flex: 0 0 auto;
+  margin-top: 4px;
+  border-radius: 50%;
+}
+
+.notification-dot.overdue { background: var(--red); }
+.notification-dot.pending { background: var(--orange); }
+
+.notification-empty {
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--green);
+  font-size: 10px;
+}
+
+/* Dashboard table: no clipped Cobrar button and less empty horizontal space. */
+.large-panel .table-wrapper {
+  overflow-x: hidden;
+}
+
+.large-panel table {
+  min-width: 0;
+  table-layout: fixed;
+}
+
+.large-panel table th,
+.large-panel table td {
+  padding-left: 16px;
+  padding-right: 12px;
+}
+
+.large-panel table th:nth-child(1),
+.large-panel table td:nth-child(1) { width: 28%; }
+.large-panel table th:nth-child(2),
+.large-panel table td:nth-child(2) { width: 28%; }
+.large-panel table th:nth-child(3),
+.large-panel table td:nth-child(3) { width: 17%; }
+.large-panel table th:nth-child(4),
+.large-panel table td:nth-child(4) { width: 16%; }
+.large-panel table th:nth-child(5),
+.large-panel table td:nth-child(5) { width: 11%; }
+
+.large-panel .client-cell,
+.large-panel .debt-concept {
+  min-width: 0;
+}
+
+.large-panel .client-cell strong,
+.large-panel .client-cell span,
+.large-panel .debt-concept strong,
+.large-panel .debt-concept span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.large-panel .small-pay-button {
+  min-width: 48px;
+  padding: 0 8px;
+}
+
+/* Compact customer identity: name + phone stay together. */
+.client-cell--compact {
+  gap: 9px;
+}
+
+.client-main-info {
+  min-width: 0;
+}
+
+.client-main-info strong {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.client-main-info span {
+  margin-top: 4px;
+  color: #8290a7;
+  font-size: 8px;
+}
+
+.contact-cell {
+  min-width: 0;
+}
+
+.contact-email {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.debt-concept--compact span {
+  color: var(--blue);
   font-weight: 600;
 }
 
-.plan-card ul {
-  list-style: none;
-  padding: 0;
-  margin: 15px 0 18px;
-  display: grid;
-  gap: 8px;
+/* More balanced client table columns. */
+.page-section .table-panel table {
+  table-layout: fixed;
 }
 
-.plan-card li {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  color: #536079;
-  font-size: 9px;
-  line-height: 1.35;
-}
+.page-section .table-panel table th:nth-child(1),
+.page-section .table-panel table td:nth-child(1) { width: 28%; }
+.page-section .table-panel table th:nth-child(2),
+.page-section .table-panel table td:nth-child(2) { width: 24%; }
+.page-section .table-panel table th:nth-child(3),
+.page-section .table-panel table td:nth-child(3) { width: 18%; }
+.page-section .table-panel table th:nth-child(4),
+.page-section .table-panel table td:nth-child(4) { width: 18%; }
+.page-section .table-panel table th:nth-child(5),
+.page-section .table-panel table td:nth-child(5) { width: 12%; }
 
-.plan-card li svg {
-  color: var(--green);
-  flex: 0 0 auto;
-}
-
-.plan-card .primary-button,
-.plan-card .secondary-button {
-  width: 100%;
-  margin-top: auto;
-}
-
-.plans-note {
-  margin: 15px 0 0;
-  padding: 10px 12px;
-  border-radius: 9px;
-  background: #eef1f5;
-  color: #7a879b;
-  font-size: 8px;
-  line-height: 1.5;
+/* Upcoming dates: centered number and month with breathing room. */
+.date-box {
+  width: 46px;
+  height: 46px;
+  padding: 6px 4px;
+  border: 1px solid #e1e6f1;
+  background: #f3f6fd;
+  justify-content: center;
   text-align: center;
 }
 
-@media (max-width: 900px) {
-  .plans-grid {
-    grid-template-columns: 1fr;
-  }
+.date-box strong {
+  line-height: 1.1;
+}
 
-  .plan-card {
-    padding: 15px;
-  }
+.date-box span {
+  line-height: 1;
+  margin-top: 4px;
+}
+
+.upcoming-item {
+  gap: 12px;
+  padding: 11px 5px;
+}
+
+/* Panels/cards are slightly tinted instead of pure white. */
+.stat-card,
+.panel,
+.modal,
+.notification-popover,
+.icon-button,
+.secondary-button {
+  background: var(--surface);
+}
+
+.stat-card,
+.panel {
+  box-shadow: 0 4px 16px rgba(16,24,40,.045);
+}
+
+/* Settings modal */
+.modal-wide {
+  width: min(680px, calc(100vw - 32px));
+}
+
+.settings-layout {
+  padding: 2px 22px 0;
+}
+
+.settings-section {
+  padding: 18px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.settings-section-head {
+  margin-bottom: 15px;
+}
+
+.settings-section-head strong {
+  display: block;
+  color: var(--navy);
+  font-size: 12px;
+}
+
+.settings-section-head span {
+  display: block;
+  color: var(--text-muted);
+  font-size: 9px;
+  margin-top: 4px;
+}
+
+.setting-toggle-row {
+  min-height: 58px;
+  padding: 11px 13px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  background: var(--surface-soft);
+}
+
+.setting-toggle-row input {
+  width: 17px;
+  height: 17px;
+  accent-color: var(--blue);
+}
+
+.setting-toggle-row span {
+  min-width: 0;
+}
+
+.setting-toggle-row strong,
+.setting-toggle-row small {
+  display: block;
+}
+
+.setting-toggle-row strong {
+  color: #344054;
+  font-size: 10px;
+}
+
+.setting-toggle-row small {
+  color: var(--text-muted);
+  font-size: 9px;
+  margin-top: 3px;
+}
+
+.settings-plan-card {
+  margin: 18px 0 0;
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  border: 1px solid #dfe5f3;
+  border-radius: 12px;
+  background: #f4f6ff;
+}
+
+.settings-plan-card span,
+.settings-plan-card strong,
+.settings-plan-card small {
+  display: block;
+}
+
+.settings-plan-card span {
+  color: var(--blue);
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.settings-plan-card strong {
+  color: var(--navy);
+  font-size: 13px;
+  margin-top: 3px;
+}
+
+.settings-plan-card small {
+  color: var(--text-secondary);
+  font-size: 9px;
+  margin-top: 3px;
+}
+
+.help-modal-content {
+  padding: 4px 22px 22px;
+}
+
+.help-topic {
+  display: flex;
+  gap: 12px;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.help-topic > span {
+  color: var(--blue);
+  font-size: 9px;
+  font-weight: 800;
+  padding-top: 2px;
+}
+
+.help-topic strong {
+  display: block;
+  color: var(--navy);
+  font-size: 11px;
+}
+
+.help-topic p {
+  margin: 4px 0 0;
+  color: var(--text-secondary);
+  font-size: 9px;
+  line-height: 1.55;
+}
+
+.help-contact {
+  margin-top: 14px;
+  padding: 11px 12px;
+  border-radius: 10px;
+  background: var(--surface-soft);
+  color: var(--text-secondary);
+  font-size: 9px;
+  line-height: 1.5;
 }
 
 @media (max-width: 780px) {
-  .notification-panel {
-    right: 0;
-    top: 49px;
-    width: min(365px, calc(100vw - 36px));
-  }
-}
-
-@media (max-width: 500px) {
-  .account-actions {
-    flex-direction: column-reverse;
+  .notification-popover {
+    position: fixed;
+    top: 74px;
+    right: 14px;
+    width: min(315px, calc(100vw - 28px));
   }
 
-  .account-actions button {
-    width: 100%;
-  }
-}
-
-/* =========================================================
-   FINAL POLISH — TABLAS + ICONO DE CONFIGURACIÓN
-   ========================================================= */
-
-/* La tabla deja de repartir las columnas con espacios exagerados. */
-.data-table {
-  table-layout: fixed;
-  min-width: 0;
-}
-
-.data-table th,
-.data-table td {
-  overflow: hidden;
-}
-
-.data-table th:nth-child(1),
-.data-table td:nth-child(1) {
-  width: 25%;
-}
-
-.data-table th:nth-child(2),
-.data-table td:nth-child(2) {
-  width: 28%;
-}
-
-.data-table th:nth-child(3),
-.data-table td:nth-child(3) {
-  width: 16%;
-}
-
-.data-table th:nth-child(4),
-.data-table td:nth-child(4) {
-  width: 15%;
-}
-
-.data-table th:nth-child(5),
-.data-table td:nth-child(5) {
-  width: 9%;
-}
-
-.data-table th:nth-child(6),
-.data-table td:nth-child(6) {
-  width: 7%;
-}
-
-.detailed-table {
-  min-width: 790px;
-  table-layout: auto;
-}
-
-.detailed-table th:nth-child(1),
-.detailed-table td:nth-child(1) {
-  min-width: 175px;
-}
-
-.detailed-table th:nth-child(2),
-.detailed-table td:nth-child(2) {
-  min-width: 175px;
-}
-
-.client-identity {
-  min-width: 0;
-  gap: 8px;
-}
-
-.client-copy {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 2px;
-}
-
-.client-copy strong,
-.client-copy span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.debt-concept-button {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  gap: 2px;
-  padding: 1px 0;
-}
-
-.debt-concept .concept-name {
-  display: block;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  color: var(--navy);
-  font-size: 10px;
-  line-height: 1.25;
-  font-weight: 750;
-}
-
-.debt-concept .concept-detail {
-  display: inline-flex;
-  align-items: center;
-  color: var(--blue);
-  font-size: 8px;
-  line-height: 1.25;
-  font-weight: 700;
-  opacity: 0.95;
-}
-
-.debt-concept-button:hover .concept-detail {
-  text-decoration: underline;
-  opacity: 1;
-}
-
-/* El botón de configuración queda visualmente equilibrado con la campana. */
-.topbar-actions .icon-button {
-  width: 42px;
-  height: 42px;
-  border-radius: 13px;
-  display: grid;
-  place-items: center;
-  padding: 0;
-}
-
-.topbar-actions .icon-button svg {
-  width: 18px;
-  height: 18px;
-  stroke-width: 1.65;
-}
-
-.topbar-actions .icon-button:not(.notification) {
-  color: #59677e;
-  background: #f8fafc;
-}
-
-.topbar-actions .icon-button:not(.notification):hover {
-  color: var(--navy);
-  background: #ffffff;
-  border-color: #c7d0dd;
-  box-shadow: 0 5px 14px rgba(16, 24, 40, 0.08);
-}
-
-.topbar-actions .notification {
-  color: #526078;
-}
-
-.topbar-actions .notification:hover {
-  color: var(--navy);
-}
-
-/* Mantiene la fecha de vencimiento centrada y limpia. */
-.date-box strong,
-.date-box span {
-  text-align: center !important;
-  justify-content: center !important;
-  align-self: center !important;
-}
-
-/* =========================================
-   TABLE BALANCE / COMPACT LAYOUT
-========================================= */
-
-.data-table th,
-.data-table td {
-  padding-left: 17px;
-  padding-right: 17px;
-}
-
-.data-table td {
-  height: 66px;
-}
-
-.data-table .client-cell {
-  gap: 8px;
-}
-
-.data-table .client-copy {
-  gap: 2px;
-}
-
-.data-table .client-copy strong {
-  font-size: 10px;
-}
-
-.data-table .client-copy span {
-  margin-top: 1px;
-  font-size: 8px;
-}
-
-.data-table .debt-concept-button {
-  width: 100%;
-  gap: 2px;
-  padding: 0;
-}
-
-.data-table .concept-name {
-  font-size: 10px;
-}
-
-.data-table .concept-detail {
-  margin-top: 1px;
-  font-size: 8px;
-}
-
-.data-table .amount-cell {
-  padding-left: 4px;
-}
-
-@media (min-width: 901px) {
-  .detailed-table {
-    table-layout: fixed;
-    min-width: 0;
+  .settings-plan-card {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
-  .detailed-table th:nth-child(1),
-  .detailed-table td:nth-child(1) {
-    width: 24%;
-    min-width: 0;
-  }
-
-  .detailed-table th:nth-child(2),
-  .detailed-table td:nth-child(2) {
-    width: 27%;
-    min-width: 0;
-  }
-
-  .detailed-table th:nth-child(3),
-  .detailed-table td:nth-child(3) {
-    width: 15%;
-  }
-
-  .detailed-table th:nth-child(4),
-  .detailed-table td:nth-child(4) {
-    width: 16%;
-  }
-
-  .detailed-table th:nth-child(5),
-  .detailed-table td:nth-child(5) {
-    width: 11%;
-  }
-
-  .detailed-table th:nth-child(6),
-  .detailed-table td:nth-child(6) {
-    width: 7%;
-  }
-}
-
-@media (max-width: 900px) {
-  .data-table {
-    min-width: 690px;
-    table-layout: auto;
-  }
-
-  .compact-table {
-    min-width: 690px;
+  .modal-wide {
+    width: calc(100vw - 24px);
   }
 }
