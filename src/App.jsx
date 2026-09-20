@@ -55,26 +55,23 @@ function Logo({ collapsed = false }) {
   return (
     <div className={`brand ${collapsed ? "brand-small" : ""}`} aria-label="Kobri">
       <div className="brand-mark">
-        <svg viewBox="0 0 64 64" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="kobriGloss" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="#FFFFFF" />
-              <stop offset="100%" stopColor="#EAEFFB" />
-            </linearGradient>
-            <linearGradient id="kobriArmUp" x1="0" y1="1" x2="1" y2="0">
-              <stop offset="0%" stopColor="#0052FF" />
-              <stop offset="100%" stopColor="#00A3FF" />
-            </linearGradient>
-            <linearGradient id="kobriArmDown" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="#0052FF" />
-              <stop offset="100%" stopColor="#00A3FF" />
-            </linearGradient>
-          </defs>
-          <rect x="1.5" y="1.5" width="61" height="61" rx="17" fill="url(#kobriGloss)" stroke="#E3E9FA" />
-          <rect x="16" y="14" width="9" height="36" rx="4.5" fill="#0B1324" />
-          <line x1="24" y1="32" x2="46" y2="50" stroke="url(#kobriArmDown)" strokeWidth="8" strokeLinecap="round" />
-          <line x1="24" y1="30" x2="48" y2="13" stroke="url(#kobriArmUp)" strokeWidth="8" strokeLinecap="round" />
-        </svg>
+      <svg viewBox="0 0 64 64" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="kobriTile" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stopColor="#FFFFFF" />
+      <stop offset="55%" stopColor="#F4F6FB" />
+      <stop offset="100%" stopColor="#DDE3F0" />
+    </linearGradient>
+    <linearGradient id="kobriK" x1="0.1" y1="1" x2="0.95" y2="0">
+      <stop offset="0%" stopColor="#0038F0" />
+      <stop offset="55%" stopColor="#0B57F5" />
+      <stop offset="100%" stopColor="#2E86FF" />
+    </linearGradient>
+  </defs>
+  <rect x="1" y="1" width="62" height="62" rx="15" fill="url(#kobriTile)" stroke="#E6EAF3" />
+  <rect x="17" y="12" width="9" height="39" rx="2.5" fill="#0B1324" />
+  <path d="M26 26 L40 10 L54 10 L34 33 L54 52 L40 52 L26 38 Z" fill="url(#kobriK)" />
+</svg>
       </div>
       {!collapsed && (
         <div className="brand-copy">
