@@ -121,8 +121,8 @@ html.kobri-dark {
   --btn-bg-hover: linear-gradient(180deg, #6d8aff 0%, #5375ff 100%);
   --btn-shadow: 0 10px 22px rgba(65, 105, 255, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
 
-  --side-bg: linear-gradient(180deg, #0a1122 0%, #070c18 100%);
-  --side-line: rgba(255, 255, 255, 0.07);
+  --side-bg: linear-gradient(180deg, #1b2650 0%, #141d3d 55%, #0f1730 100%);
+  --side-line: rgba(127, 155, 255, 0.14);
 
   --tone-0: #9db4ff;
   --tone-1: #c0a9ff;
@@ -182,6 +182,7 @@ select:focus-visible {
 }
 
 .app-shell {
+  --sidebar-w: 252px;
   min-height: 100vh;
   display: flex;
   background: var(--page-glow), var(--bg);
@@ -252,7 +253,7 @@ select:focus-visible {
   color: #fff;
   font-size: 21px;
   font-weight: 800;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
 }
 
 .brand-copy small {
@@ -1982,6 +1983,7 @@ tbody tr:hover {
 .modal-backdrop {
   position: fixed;
   inset: 0;
+  left: var(--sidebar-w, 0px);
   z-index: 100;
   padding: 20px;
   background: rgba(8, 13, 26, 0.55);
@@ -2710,13 +2712,13 @@ html.kobri-dark .modal-backdrop {
 ========================================================= */
 
 .help-modal {
-  width: min(700px, calc(100vw - 32px));
+  width: min(600px, calc(100vw - 32px));
 }
 
 .help-modal .modal-header {
   position: relative;
   display: block;
-  padding: 32px 64px 24px;
+  padding: 28px 56px 20px;
   text-align: center;
 }
 
@@ -2726,48 +2728,48 @@ html.kobri-dark .modal-backdrop {
 
 .help-modal .modal-header h2 {
   text-align: center;
-  font-size: 25px;
+  font-size: 22px;
 }
 
 .help-modal .modal-header p {
   margin-top: 8px;
   text-align: center;
-  font-size: 14.5px;
+  font-size: 14px;
 }
 
 .help-modal .modal-close {
   position: absolute;
-  top: 18px;
-  right: 18px;
+  top: 16px;
+  right: 16px;
 }
 
 .help-modal .modal-body {
-  padding: 24px 28px 28px;
+  padding: 20px 24px 24px;
   display: grid;
-  gap: 14px;
+  gap: 12px;
 }
 
 .help-intro {
-  padding: 20px 22px;
+  padding: 18px 20px;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
   border: 1px solid var(--line);
   border-radius: 16px;
   background: var(--surface-2);
 }
 
 .help-intro-mark {
-  width: 48px;
-  height: 48px;
-  flex: 0 0 48px;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
   display: grid;
   place-items: center;
-  border-radius: 14px;
+  border-radius: 13px;
   background: linear-gradient(140deg, #4169ff, #6f56e8);
   color: #fff;
   font-family: var(--font-display);
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 800;
   box-shadow: 0 8px 18px rgba(65, 105, 255, 0.3);
 }
@@ -2782,30 +2784,30 @@ html.kobri-dark .modal-backdrop {
 .help-intro strong {
   color: var(--ink);
   font-family: var(--font-display);
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 800;
   line-height: 1.3;
 }
 
 .help-intro span {
   color: var(--ink-3);
-  font-size: 14px;
-  line-height: 1.55;
+  font-size: 13.5px;
+  line-height: 1.5;
 }
 
 .help-steps {
   display: grid;
-  gap: 10px;
+  gap: 9px;
 }
 
 .help-step {
   display: grid;
-  grid-template-columns: 48px minmax(0, 1fr);
+  grid-template-columns: 44px minmax(0, 1fr);
   align-items: center;
-  gap: 16px;
-  padding: 18px 20px;
+  gap: 14px;
+  padding: 15px 18px;
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: 15px;
   background: var(--surface);
   text-align: left;
   transition: border-color 0.16s ease, transform 0.16s ease, box-shadow 0.16s ease;
@@ -2818,15 +2820,15 @@ html.kobri-dark .modal-backdrop {
 }
 
 .help-step-number {
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 44px;
   display: grid;
   place-items: center;
-  border-radius: 14px;
+  border-radius: 13px;
   background: var(--accent-soft);
   color: var(--accent-ink);
   font-family: var(--font-display);
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 800;
 }
 
@@ -2834,38 +2836,38 @@ html.kobri-dark .modal-backdrop {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 4px;
   text-align: left;
 }
 
 .help-step-copy strong {
   color: var(--ink);
-  font-size: 15.5px;
+  font-size: 15px;
   font-weight: 700;
   line-height: 1.3;
 }
 
 .help-step-copy span {
   color: var(--ink-3);
-  font-size: 14px;
-  line-height: 1.55;
+  font-size: 13.5px;
+  line-height: 1.5;
 }
 
 .help-footer {
-  padding: 18px 20px;
+  padding: 16px 18px;
   display: flex;
   align-items: flex-start;
-  gap: 14px;
+  gap: 12px;
   border: 1px solid color-mix(in srgb, var(--accent) 24%, transparent);
-  border-radius: 16px;
+  border-radius: 15px;
   background: var(--accent-soft);
   text-align: left;
 }
 
 .help-footer-icon {
-  width: 32px;
-  height: 32px;
-  flex: 0 0 32px;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
   display: grid;
   place-items: center;
   border-radius: 10px;
@@ -2881,14 +2883,14 @@ html.kobri-dark .modal-backdrop {
 
 .help-footer strong {
   color: var(--ink);
-  font-size: 15px;
+  font-size: 14.5px;
   font-weight: 700;
 }
 
 .help-footer span {
   color: var(--ink-2);
-  font-size: 14px;
-  line-height: 1.55;
+  font-size: 13.5px;
+  line-height: 1.5;
 }
 
 /* =========================================================
@@ -2975,6 +2977,10 @@ html.kobri-dark .modal-backdrop {
 }
 
 @media (max-width: 1100px) {
+  .app-shell {
+    --sidebar-w: 225px;
+  }
+
   .sidebar {
     width: 225px;
   }
@@ -3021,6 +3027,10 @@ html.kobri-dark .modal-backdrop {
 }
 
 @media (max-width: 780px) {
+  .app-shell {
+    --sidebar-w: 0px;
+  }
+
   .sidebar {
     width: 260px;
     transform: translateX(-100%);
@@ -3286,7 +3296,7 @@ html.kobri-dark .modal-backdrop {
   }
 
   .help-modal .modal-header {
-    padding: 26px 48px 20px;
+    padding: 24px 46px 18px;
   }
 
   .help-modal .modal-body {
@@ -3294,14 +3304,14 @@ html.kobri-dark .modal-backdrop {
   }
 
   .help-step {
-    grid-template-columns: 42px minmax(0, 1fr);
+    grid-template-columns: 40px minmax(0, 1fr);
     gap: 12px;
-    padding: 14px;
+    padding: 13px;
   }
 
   .help-step-number {
-    width: 42px;
-    height: 42px;
+    width: 40px;
+    height: 40px;
   }
 }
 
