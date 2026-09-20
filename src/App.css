@@ -707,17 +707,11 @@ select:focus-visible {
    BOTONES
 ========================================================= */
 
-.primary-button,
-.secondary-button,
-.small-pay-button,
-.text-button {
-  border: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  font-weight: 700;
-  transition: 0.18s ease;
+.primary-button svg,
+.secondary-button svg,
+.small-pay-button svg,
+.text-button svg {
+  flex: 0 0 auto;
 }
 
 .primary-button {
