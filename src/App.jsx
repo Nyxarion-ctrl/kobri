@@ -1039,7 +1039,7 @@ function App() {
                                       .charAt(0)
                                       .toUpperCase()}
                                   </div>
-                                  <div>
+                                  <div className="client-copy">
                                     <strong>{client.name}</strong>
                                     <span>Cliente</span>
                                   </div>
@@ -1215,7 +1215,7 @@ function App() {
                                   <div className="client-avatar">
                                     {client?.name?.charAt(0) || "K"}
                                   </div>
-                                  <div>
+                                  <div className="client-copy">
                                     <strong>
                                       {client?.name || "Cliente"}
                                     </strong>
@@ -1756,54 +1756,83 @@ function App() {
 
       {showAccount && (
         <Modal
+          className="account-modal"
           title="Mi cuenta"
           subtitle="Información de tu cuenta de Kobri."
           onClose={() => setShowAccount(false)}
         >
           <div className="account-profile">
             <div className="account-avatar">K</div>
-            <div>
+            <div className="account-profile-copy">
               <strong>{businessSettings.businessName}</strong>
               <span>Administrador</span>
             </div>
+            <span className="account-plan-badge">Plan {currentPlan}</span>
           </div>
 
-          <div className="detail-grid">
-            <div>
-              <span>Plan</span>
-              <strong>{currentPlan}</strong>
+          <div className="account-stats">
+            <div className="account-stat">
+              <div className="stat-icon purple">
+                <Icon name="card" size={18} />
+              </div>
+              <div className="account-stat-copy">
+                <span>Plan</span>
+                <strong>{currentPlan}</strong>
+              </div>
             </div>
-            <div>
-              <span>Moneda</span>
-              <strong>RD$</strong>
+
+            <div className="account-stat">
+              <div className="stat-icon green">
+                <Icon name="dollar" size={18} />
+              </div>
+              <div className="account-stat-copy">
+                <span>Moneda</span>
+                <strong>RD$</strong>
+              </div>
             </div>
-            <div>
-              <span>Clientes</span>
-              <strong>{clients.length}</strong>
+
+            <div className="account-stat">
+              <div className="stat-icon blue">
+                <Icon name="users" size={18} />
+              </div>
+              <div className="account-stat-copy">
+                <span>Clientes</span>
+                <strong>{clients.length}</strong>
+              </div>
             </div>
-            <div>
-              <span>Deudas</span>
-              <strong>{debts.length}</strong>
+
+            <div className="account-stat">
+              <div className="stat-icon orange">
+                <Icon name="wallet" size={18} />
+              </div>
+              <div className="account-stat-copy">
+                <span>Deudas</span>
+                <strong>{debts.length}</strong>
+              </div>
             </div>
           </div>
 
           <div className="account-actions">
             <button
+              type="button"
               className="secondary-button"
               onClick={() => {
                 setShowAccount(false)
                 setShowSettings(true)
               }}
             >
+              <Icon name="settings" size={16} />
               Editar configuración
             </button>
             <button
+              type="button"
               className="primary-button"
               onClick={() => {
                 setShowAccount(false)
                 setShowPlans(true)
               }}
             >
+              <Icon name="card" size={16} />
               Ver planes
             </button>
           </div>
@@ -1812,6 +1841,7 @@ function App() {
 
       {showPlans && (
         <Modal
+          className="plans-modal"
           title="Planes de Kobri"
           subtitle="Elige el nivel que mejor se adapte a tu negocio."
           onClose={() => setShowPlans(false)}
@@ -1837,6 +1867,7 @@ function App() {
                   ))}
                 </ul>
                 <button
+                  type="button"
                   className={currentPlan === plan.name ? "secondary-button" : "primary-button"}
                   onClick={() => {
                     setCurrentPlan(plan.name)
@@ -1930,7 +1961,7 @@ function DebtTable({ rows, onPay, onDetails, detailed = false }) {
                 </span>
               </td>
 
-              <td>
+              <td className="action-cell">
                 {debt.balance > 0 ? (
                   <button
                     className="small-pay-button"
@@ -1982,12 +2013,12 @@ function Modal({ title, subtitle, onClose, children, className = "" }) {
             <p>{subtitle}</p>
           </div>
 
-          <button className="modal-close" onClick={onClose}>
+          <button type="button" className="modal-close" onClick={onClose} aria-label="Cerrar">
             <Icon name="close" size={19} />
           </button>
         </div>
 
-        {children}
+        <div className="modal-body">{children}</div>
       </div>
     </div>
   )
