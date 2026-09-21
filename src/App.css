@@ -2480,7 +2480,12 @@ html.kobri-dark .modal-backdrop {
 .account-actions button {
   width: 100%;
   min-width: 0;
-  gap: 10px;
+  gap: 12px;
+}
+
+.account-actions button svg {
+  flex: 0 0 auto;
+  display: block;
 }
 
 /* =========================================================
