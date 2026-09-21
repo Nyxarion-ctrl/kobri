@@ -2126,7 +2126,7 @@ function App() {
                 setShowSettings(true)
               }}
             >
-              <Icon name="settings" size={16} />
+              <Icon name="settings" size={18} />
               Editar configuración
             </button>
             <button
@@ -2137,7 +2137,7 @@ function App() {
                 setShowPlans(true)
               }}
             >
-              <Icon name="card" size={16} />
+              <Icon name="card" size={18} />
               Ver planes
             </button>
           </div>
