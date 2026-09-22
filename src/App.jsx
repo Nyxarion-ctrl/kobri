@@ -2,9 +2,9 @@ import { useEffect, useMemo, useState } from "react"
 import "./App.css"
 
 const money = (value) =>
-  new Intl.NumberFormat("es-DO", {
+  new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: "DOP",
+    currency: "USD",
     minimumFractionDigits: 2,
   }).format(Number(value || 0))
 
@@ -331,15 +331,20 @@ function App() {
 
   const [businessSettings, setBusinessSettings] = useState(() => {
     const saved = localStorage.getItem("kobri_settings")
-    return saved
-      ? JSON.parse(saved)
-      : {
-          businessName: "Mi negocio",
-          phone: "",
-          currency: "DOP",
-          notifications: true,
-        }
+    const parsed = saved ? JSON.parse(saved) : {}
+
+    return {
+      businessName: parsed.businessName || "Mi negocio",
+      phone: parsed.phone || "",
+      currency: "USD",
+      notifications: parsed.notifications ?? true,
+    }
   })
+
+  const [settingsForm, setSettingsForm] = useState(() => ({
+    ...businessSettings,
+    currency: "USD",
+  }))
 
   const [readNotifications, setReadNotifications] = useState(() => {
     const saved = localStorage.getItem("kobri_read_notifications")
@@ -616,8 +621,23 @@ function App() {
     )
   }
 
+  function openSettings() {
+    setSettingsForm({
+      ...businessSettings,
+      currency: "USD",
+    })
+    setShowAccount(false)
+    setShowNotifications(false)
+    setShowPlans(false)
+    setShowSettings(true)
+  }
+
   function saveBusinessSettings(event) {
     event.preventDefault()
+    setBusinessSettings({
+      ...settingsForm,
+      currency: "USD",
+    })
     setShowSettings(false)
   }
 
@@ -1707,7 +1727,7 @@ function App() {
               <label>
                 Monto
                 <div className="input-money">
-                  <span>RD$</span>
+                  <span>$</span>
                   <input
                     type="number"
                     min="0"
@@ -1763,7 +1783,7 @@ function App() {
               <label>
                 Monto a pagar
                 <div className="input-money">
-                  <span>RD$</span>
+                  <span>$</span>
                   <input
                     autoFocus
                     type="number"
@@ -2023,10 +2043,10 @@ function App() {
               <label className="full">
                 Nombre del negocio
                 <input
-                  value={businessSettings.businessName}
+                  value={settingsForm.businessName}
                   onChange={(event) =>
-                    setBusinessSettings({
-                      ...businessSettings,
+                    setSettingsForm({
+                      ...settingsForm,
                       businessName: event.target.value,
                     })
                   }
@@ -2037,10 +2057,10 @@ function App() {
               <label>
                 Teléfono
                 <input
-                  value={businessSettings.phone}
+                  value={settingsForm.phone}
                   onChange={(event) =>
-                    setBusinessSettings({
-                      ...businessSettings,
+                    setSettingsForm({
+                      ...settingsForm,
                       phone: event.target.value,
                     })
                   }
@@ -2051,26 +2071,21 @@ function App() {
               <label>
                 Moneda principal
                 <select
-                  value={businessSettings.currency}
-                  onChange={(event) =>
-                    setBusinessSettings({
-                      ...businessSettings,
-                      currency: event.target.value,
-                    })
-                  }
+                  value="USD"
+                  disabled
                 >
-                  <option value="DOP">Peso dominicano (RD$)</option>
+                  <option value="USD">Dólar estadounidense (USD)</option>
                 </select>
               </label>
 
               <label className="full settings-check">
                 <input
                   type="checkbox"
-                  checked={businessSettings.notifications}
+                  checked={settingsForm.notifications}
                   disabled={!planLimits.reminders}
                   onChange={(event) =>
-                    setBusinessSettings({
-                      ...businessSettings,
+                    setSettingsForm({
+                      ...settingsForm,
                       notifications: event.target.checked,
                     })
                   }
@@ -2125,7 +2140,7 @@ function App() {
               </div>
               <div className="account-stat-copy">
                 <span>Moneda</span>
-                <strong>RD$</strong>
+                <strong>USD</strong>
               </div>
             </div>
 
@@ -2154,10 +2169,7 @@ function App() {
             <button
               type="button"
               className="secondary-button"
-              onClick={() => {
-                setShowAccount(false)
-                setShowSettings(true)
-              }}
+              onClick={openSettings}
             >
               <Icon name="settings" size={18} />
               Editar configuración
@@ -2186,9 +2198,9 @@ function App() {
         >
           <div className="plans-grid">
             {[
-              { name: "Gratis", price: "RD$0", note: "Para empezar", features: ["Hasta 20 clientes", "Control de deudas", "Registro de pagos"] },
-              { name: "Pro", price: "RD$299", note: "Para negocios en crecimiento", features: ["Clientes ilimitados", "Recordatorios", "Reportes y métricas"] },
-              { name: "Negocio", price: "RD$599", note: "Para equipos", features: ["Todo lo de Pro", "Usuarios y permisos", "Funciones avanzadas"] },
+              { name: "Gratis", price: "$0", note: "Para empezar", features: ["Hasta 20 clientes", "Control de deudas", "Registro de pagos"] },
+              { name: "Pro", price: "$5", note: "Para negocios en crecimiento", features: ["Clientes ilimitados", "Recordatorios", "Reportes y métricas"] },
+              { name: "Negocio", price: "$10", note: "Para equipos", features: ["Todo lo de Pro", "Usuarios y permisos", "Funciones avanzadas"] },
             ].map((plan) => (
               <div className={`plan-card ${currentPlan === plan.name ? "selected" : ""}`} key={plan.name}>
                 {currentPlan === plan.name && <span className="plan-current">Actual</span>}
@@ -2217,7 +2229,7 @@ function App() {
               </div>
             ))}
           </div>
-          <p className="plans-note">La selección del plan es visual por ahora. Conectaremos el cobro real cuando integremos suscripciones y pagos.</p>
+          <p className="plans-note">Los precios están expresados en USD. El cobro de los planes Pro y Negocio se realizará mediante PayPal cuando conectemos las suscripciones reales.</p>
         </Modal>
       )}
     </div>
