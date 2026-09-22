@@ -730,6 +730,36 @@ select:focus-visible {
   transform: translateY(-1px);
 }
 
+.primary-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.plan-limit-note {
+  margin: 8px 0 0;
+  color: var(--warn-ink);
+  font-size: 13px;
+}
+
+.plan-limit-note .text-button {
+  padding: 0;
+  font-size: 13px;
+}
+
+.plan-lock {
+  display: block;
+  margin-top: 3px;
+  color: var(--ink-3);
+  font-style: normal;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.settings-check:has(input:disabled) {
+  opacity: 0.6;
+}
+
 .primary-button.small {
   min-height: 40px;
   font-size: 13px;
