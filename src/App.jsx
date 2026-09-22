@@ -51,6 +51,12 @@ const initialDebts = [
   },
 ]
 
+const PLAN_LIMITS = {
+  Gratis: { maxClients: 20, reminders: false },
+  Pro: { maxClients: Infinity, reminders: true },
+  Negocio: { maxClients: Infinity, reminders: true },
+}
+
 function Logo({ collapsed = false }) {
   return (
     <div className={`brand ${collapsed ? "brand-small" : ""}`} aria-label="Kobri">
@@ -199,12 +205,12 @@ function Icon({ name, size = 20 }) {
         <path d="M4 6h16M4 12h16M4 18h16" />
       </>
     ),
-            settings: (
-          <>
-            <path d="M12.2 3h-.4a1.9 1.9 0 0 0-1.9 1.9v.2a1.9 1.9 0 0 1-.95 1.64l-.5.29a1.9 1.9 0 0 1-1.9 0l-.16-.1a1.9 1.9 0 0 0-2.6.7l-.2.35a1.9 1.9 0 0 0 .7 2.6l.16.1a1.9 1.9 0 0 1 .95 1.63v.58a1.9 1.9 0 0 1-.95 1.64l-.16.09a1.9 1.9 0 0 0-.7 2.6l.2.35a1.9 1.9 0 0 0 2.6.7l.16-.1a1.9 1.9 0 0 1 1.9 0l.5.29a1.9 1.9 0 0 1 .95 1.64v.2A1.9 1.9 0 0 0 11.8 21h.4a1.9 1.9 0 0 0 1.9-1.9v-.2a1.9 1.9 0 0 1 .95-1.64l.5-.29a1.9 1.9 0 0 1 1.9 0l.16.1a1.9 1.9 0 0 0 2.6-.7l.2-.35a1.9 1.9 0 0 0-.7-2.6l-.16-.09a1.9 1.9 0 0 1-.95-1.64v-.58a1.9 1.9 0 0 1 .95-1.63l.16-.1a1.9 1.9 0 0 0 .7-2.6l-.2-.35a1.9 1.9 0 0 0-2.6-.7l-.16.1a1.9 1.9 0 0 1-1.9 0l-.5-.29a1.9 1.9 0 0 1-.95-1.64v-.2A1.9 1.9 0 0 0 12.2 3Z" />
-            <circle cx="12" cy="12" r="3" />
-          </>
-        ),
+    settings: (
+      <>
+        <path d="M12.2 3h-.4a1.9 1.9 0 0 0-1.9 1.9v.2a1.9 1.9 0 0 1-.95 1.64l-.5.29a1.9 1.9 0 0 1-1.9 0l-.16-.1a1.9 1.9 0 0 0-2.6.7l-.2.35a1.9 1.9 0 0 0 .7 2.6l.16.1a1.9 1.9 0 0 1 .95 1.63v.58a1.9 1.9 0 0 1-.95 1.64l-.16.09a1.9 1.9 0 0 0-.7 2.6l.2.35a1.9 1.9 0 0 0 2.6.7l.16-.1a1.9 1.9 0 0 1 1.9 0l.5.29a1.9 1.9 0 0 1 .95 1.64v.2A1.9 1.9 0 0 0 11.8 21h.4a1.9 1.9 0 0 0 1.9-1.9v-.2a1.9 1.9 0 0 1 .95-1.64l.5-.29a1.9 1.9 0 0 1 1.9 0l.16.1a1.9 1.9 0 0 0 2.6-.7l.2-.35a1.9 1.9 0 0 0-.7-2.6l-.16-.09a1.9 1.9 0 0 1-.95-1.64v-.58a1.9 1.9 0 0 1 .95-1.63l.16-.1a1.9 1.9 0 0 0 .7-2.6l-.2-.35a1.9 1.9 0 0 0-2.6-.7l-.16.1a1.9 1.9 0 0 1-1.9 0l-.5-.29a1.9 1.9 0 0 1-.95-1.64v-.2A1.9 1.9 0 0 0 12.2 3Z" />
+        <circle cx="12" cy="12" r="3" />
+      </>
+    ),
   }
 
   return <svg {...common}>{icons[name] || icons.more}</svg>
@@ -321,6 +327,7 @@ function App() {
   const [search, setSearch] = useState("")
 
   const [currentPlan, setCurrentPlan] = useState(() => localStorage.getItem("kobri_plan") || "Gratis")
+  const planLimits = PLAN_LIMITS[currentPlan] || PLAN_LIMITS.Gratis
 
   const [businessSettings, setBusinessSettings] = useState(() => {
     const saved = localStorage.getItem("kobri_settings")
@@ -404,6 +411,12 @@ function App() {
     localStorage.setItem("kobri_theme", theme)
     document.documentElement.classList.toggle("kobri-dark", theme === "dark")
   }, [theme])
+
+  useEffect(() => {
+    if (!planLimits.reminders && businessSettings.notifications) {
+      setBusinessSettings((current) => ({ ...current, notifications: false }))
+    }
+  }, [planLimits.reminders, businessSettings.notifications])
 
   const anyModalOpen =
     showDebtModal ||
@@ -612,6 +625,7 @@ function App() {
     event.preventDefault()
 
     if (!clientForm.name.trim()) return
+    if (clients.length >= planLimits.maxClients) return
 
     const newClient = {
       id: Date.now(),
@@ -1266,11 +1280,24 @@ function App() {
                 <div>
                   <h1>Clientes</h1>
                   <p>{pageTitle()[1]}</p>
+                  {clients.length >= planLimits.maxClients && (
+                    <p className="plan-limit-note">
+                      Alcanzaste el límite de {planLimits.maxClients} clientes del plan Gratis.{" "}
+                      <button
+                        type="button"
+                        className="text-button"
+                        onClick={() => setShowPlans(true)}
+                      >
+                        Ver planes
+                      </button>
+                    </p>
+                  )}
                 </div>
 
                 <button
                   className="primary-button"
                   onClick={() => setShowClientModal(true)}
+                  disabled={clients.length >= planLimits.maxClients}
                 >
                   <Icon name="plus" size={18} />
                   Nuevo cliente
@@ -2040,6 +2067,7 @@ function App() {
                 <input
                   type="checkbox"
                   checked={businessSettings.notifications}
+                  disabled={!planLimits.reminders}
                   onChange={(event) =>
                     setBusinessSettings({
                       ...businessSettings,
@@ -2047,7 +2075,12 @@ function App() {
                     })
                   }
                 />
-                <span>Recibir notificaciones de vencimientos y pagos</span>
+                <span>
+                  Recibir notificaciones de vencimientos y pagos
+                  {!planLimits.reminders && (
+                    <em className="plan-lock">Disponible en el plan Pro</em>
+                  )}
+                </span>
               </label>
             </div>
 
