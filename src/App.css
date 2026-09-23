@@ -783,6 +783,7 @@ select:focus-visible {
 }
 
 .text-button {
+  border: 0;
   background: transparent;
   color: var(--accent-ink);
   font-size: 13.5px;
@@ -1450,6 +1451,7 @@ tbody tr:hover {
 }
 
 .small-pay-button {
+  border: 0;
   min-height: 36px;
   padding: 0 14px;
   background: var(--accent-soft);
