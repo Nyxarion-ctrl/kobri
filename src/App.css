@@ -788,6 +788,9 @@ select:focus-visible {
   justify-content: center;
   gap: 8px;
   background: transparent;
+  border: 0;
+  box-shadow: none;
+  appearance: none;
   color: var(--accent-ink);
   font-size: 13.5px;
   line-height: 1;
@@ -1459,6 +1462,9 @@ tbody tr:hover {
   min-height: 36px;
   padding: 0 14px;
   background: var(--accent-soft);
+  border: 0;
+  box-shadow: none;
+  appearance: none;
   color: var(--accent-ink);
   border-radius: 10px;
   font-size: 13px;
