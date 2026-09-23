@@ -1,10 +1,10 @@
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import "./App.css"
 
 const money = (value) =>
-  new Intl.NumberFormat("en-US", {
+  new Intl.NumberFormat("es-DO", {
     style: "currency",
-    currency: "USD",
+    currency: "DOP",
     minimumFractionDigits: 2,
   }).format(Number(value || 0))
 
@@ -55,6 +55,102 @@ const PLAN_LIMITS = {
   Gratis: { maxClients: 20, reminders: false },
   Pro: { maxClients: Infinity, reminders: true },
   Negocio: { maxClients: Infinity, reminders: true },
+}
+
+const PAYPAL_CLIENT_ID = "Ab036SYnuCHMyYemnst1LVBpBiPhRQ75JjiD16lqwcPzRuEd5RadgwnPHvbVY6Sr33tBuVeg29LHS8hp"
+
+const PAYPAL_PLAN_IDS = {
+  Pro: "P-7NR61790159708054NKZMVGA",
+  Negocio: "P-5JA57331WL841462LNKZUJSQ",
+}
+
+const PAYPAL_PLAN_PRICES = {
+  Pro: "$5.00 USD/mes",
+  Negocio: "$10.00 USD/mes",
+}
+
+function loadPayPalSdk() {
+  return new Promise((resolve, reject) => {
+    if (window.paypal) {
+      resolve(window.paypal)
+      return
+    }
+
+    const existing = document.getElementById("kobri-paypal-sdk")
+    if (existing) {
+      existing.addEventListener("load", () => resolve(window.paypal), { once: true })
+      existing.addEventListener("error", () => reject(new Error("No se pudo cargar PayPal.")), { once: true })
+      return
+    }
+
+    const script = document.createElement("script")
+    script.id = "kobri-paypal-sdk"
+    script.src = `https://www.paypal.com/sdk/js?client-id=${PAYPAL_CLIENT_ID}&currency=USD&vault=true&intent=subscription`
+    script.async = true
+    script.onload = () => resolve(window.paypal)
+    script.onerror = () => reject(new Error("No se pudo cargar PayPal."))
+    document.body.appendChild(script)
+  })
+}
+
+function PayPalSubscriptionButton({ planName, onApproved }) {
+  const containerRef = useRef(null)
+  const [status, setStatus] = useState("")
+
+  useEffect(() => {
+    let cancelled = false
+    let buttons = null
+
+    loadPayPalSdk()
+      .then((paypal) => {
+        if (cancelled || !containerRef.current || !paypal?.Buttons) return
+
+        containerRef.current.innerHTML = ""
+        buttons = paypal.Buttons({
+          style: {
+            layout: "vertical",
+            shape: "rect",
+            label: "subscribe",
+          },
+          createSubscription: (data, actions) =>
+            actions.subscription.create({
+              plan_id: PAYPAL_PLAN_IDS[planName],
+            }),
+          onApprove: (data) => {
+            if (cancelled) return
+            setStatus("Suscripción activada correctamente.")
+            onApproved({
+              plan: planName,
+              subscriptionId: data.subscriptionID,
+              status: "ACTIVE",
+            })
+          },
+          onCancel: () => {
+            if (!cancelled) setStatus("Pago cancelado. No se activó el plan.")
+          },
+          onError: () => {
+            if (!cancelled) setStatus("PayPal no pudo iniciar la suscripción. Intenta nuevamente.")
+          },
+        })
+
+        buttons.render(containerRef.current)
+      })
+      .catch(() => {
+        if (!cancelled) setStatus("No se pudo cargar PayPal. Revisa tu conexión e inténtalo de nuevo.")
+      })
+
+    return () => {
+      cancelled = true
+      if (buttons?.close) Promise.resolve(buttons.close()).catch(() => {})
+    }
+  }, [containerRef, onApproved, planName])
+
+  return (
+    <div className="paypal-subscription">
+      <div ref={(node) => { containerRef.current = node }} />
+      {status && <p className="paypal-status">{status}</p>}
+    </div>
+  )
 }
 
 function Logo({ collapsed = false }) {
@@ -326,7 +422,21 @@ function App() {
   const [selectedDebtDetail, setSelectedDebtDetail] = useState(null)
   const [search, setSearch] = useState("")
 
-  const [currentPlan, setCurrentPlan] = useState(() => localStorage.getItem("kobri_plan") || "Gratis")
+  const [subscription, setSubscription] = useState(() => {
+    const saved = localStorage.getItem("kobri_subscription")
+    if (!saved) return { plan: "Gratis", subscriptionId: null, status: "INACTIVE" }
+
+    try {
+      const parsed = JSON.parse(saved)
+      if (parsed?.plan && parsed?.status === "ACTIVE") return parsed
+    } catch {
+      // Ignore malformed subscription data and keep the free plan.
+    }
+
+    return { plan: "Gratis", subscriptionId: null, status: "INACTIVE" }
+  })
+
+  const currentPlan = subscription.status === "ACTIVE" ? subscription.plan : "Gratis"
   const planLimits = PLAN_LIMITS[currentPlan] || PLAN_LIMITS.Gratis
 
   const [businessSettings, setBusinessSettings] = useState(() => {
@@ -336,14 +446,14 @@ function App() {
     return {
       businessName: parsed.businessName || "Mi negocio",
       phone: parsed.phone || "",
-      currency: "USD",
+      currency: "DOP",
       notifications: parsed.notifications ?? true,
     }
   })
 
   const [settingsForm, setSettingsForm] = useState(() => ({
     ...businessSettings,
-    currency: "USD",
+    currency: "DOP",
   }))
 
   const [readNotifications, setReadNotifications] = useState(() => {
@@ -402,8 +512,8 @@ function App() {
   }, [businessSettings])
 
   useEffect(() => {
-    localStorage.setItem("kobri_plan", currentPlan)
-  }, [currentPlan])
+    localStorage.setItem("kobri_subscription", JSON.stringify(subscription))
+  }, [subscription])
 
   useEffect(() => {
     localStorage.setItem(
@@ -624,7 +734,7 @@ function App() {
   function openSettings() {
     setSettingsForm({
       ...businessSettings,
-      currency: "USD",
+      currency: "DOP",
     })
     setShowAccount(false)
     setShowNotifications(false)
@@ -636,7 +746,7 @@ function App() {
     event.preventDefault()
     setBusinessSettings({
       ...settingsForm,
-      currency: "USD",
+      currency: "DOP",
     })
     setShowSettings(false)
   }
@@ -2070,11 +2180,8 @@ function App() {
 
               <label>
                 Moneda principal
-                <select
-                  value="USD"
-                  disabled
-                >
-                  <option value="USD">Dólar estadounidense (USD)</option>
+                <select value="DOP" disabled>
+                  <option value="DOP">Peso dominicano (RD$)</option>
                 </select>
               </label>
 
@@ -2140,7 +2247,7 @@ function App() {
               </div>
               <div className="account-stat-copy">
                 <span>Moneda</span>
-                <strong>USD</strong>
+                <strong>RD$</strong>
               </div>
             </div>
 
@@ -2198,38 +2305,78 @@ function App() {
         >
           <div className="plans-grid">
             {[
-              { name: "Gratis", price: "$0", note: "Para empezar", features: ["Hasta 20 clientes", "Control de deudas", "Registro de pagos"] },
-              { name: "Pro", price: "$5", note: "Para negocios en crecimiento", features: ["Clientes ilimitados", "Recordatorios", "Reportes y métricas"] },
-              { name: "Negocio", price: "$10", note: "Para equipos", features: ["Todo lo de Pro", "Usuarios y permisos", "Funciones avanzadas"] },
-            ].map((plan) => (
-              <div className={`plan-card ${currentPlan === plan.name ? "selected" : ""}`} key={plan.name}>
-                {currentPlan === plan.name && <span className="plan-current">Actual</span>}
-                <div className="plan-card-top">
-                  <div>
-                    <strong>{plan.name}</strong>
-                    <span>{plan.note}</span>
+              {
+                name: "Gratis",
+                price: "$0",
+                note: "Para empezar",
+                features: ["Hasta 20 clientes", "Control de deudas", "Registro de pagos"],
+              },
+              {
+                name: "Pro",
+                price: "$5",
+                note: "Para negocios en crecimiento",
+                features: ["Clientes ilimitados", "Recordatorios y notificaciones", "Cobros y pagos en RD$"],
+              },
+              {
+                name: "Negocio",
+                price: "$10",
+                note: "Para una operación más completa",
+                features: ["Todo lo de Pro", "Mayor capacidad para crecer", "Funciones avanzadas de Kobri"],
+              },
+            ].map((plan) => {
+              const isCurrent = currentPlan === plan.name
+              const isPaid = plan.name !== "Gratis"
+              const anotherPaidPlanActive = currentPlan !== "Gratis" && currentPlan !== plan.name
+
+              return (
+                <div className={`plan-card ${isCurrent ? "selected" : ""}`} key={plan.name}>
+                  {isCurrent && <span className="plan-current">Actual</span>}
+                  <div className="plan-card-top">
+                    <div>
+                      <strong>{plan.name}</strong>
+                      <span>{plan.note}</span>
+                    </div>
+                    <b>{plan.price}<small>/mes</small></b>
                   </div>
-                  <b>{plan.price}<small>/mes</small></b>
+                  <ul>
+                    {plan.features.map((feature) => (
+                      <li key={feature}><Icon name="check" size={14} />{feature}</li>
+                    ))}
+                  </ul>
+
+                  {isCurrent ? (
+                    <button type="button" className="secondary-button" disabled>
+                      Plan actual
+                    </button>
+                  ) : isPaid && !anotherPaidPlanActive ? (
+                    <div>
+                      <p style={{ margin: "0 0 10px", fontSize: "13px", color: "#667085" }}>
+                        {PAYPAL_PLAN_PRICES[plan.name]} · Pago seguro con PayPal
+                      </p>
+                      <PayPalSubscriptionButton
+                        planName={plan.name}
+                        onApproved={(nextSubscription) => {
+                          setSubscription(nextSubscription)
+                          setShowPlans(false)
+                        }}
+                      />
+                    </div>
+                  ) : plan.name === "Gratis" && currentPlan !== "Gratis" ? (
+                    <button type="button" className="secondary-button" disabled>
+                      Suscripción activa en {currentPlan}
+                    </button>
+                  ) : (
+                    <button type="button" className="secondary-button" disabled>
+                      Cambia de plan desde tu suscripción actual
+                    </button>
+                  )}
                 </div>
-                <ul>
-                  {plan.features.map((feature) => (
-                    <li key={feature}><Icon name="check" size={14} />{feature}</li>
-                  ))}
-                </ul>
-                <button
-                  type="button"
-                  className={currentPlan === plan.name ? "secondary-button" : "primary-button"}
-                  onClick={() => {
-                    setCurrentPlan(plan.name)
-                    setShowPlans(false)
-                  }}
-                >
-                  {currentPlan === plan.name ? "Plan actual" : `Elegir ${plan.name}`}
-                </button>
-              </div>
-            ))}
+              )
+            })}
           </div>
-          <p className="plans-note">Los precios están expresados en USD. El cobro de los planes Pro y Negocio se realizará mediante PayPal cuando conectemos las suscripciones reales.</p>
+          <p className="plans-note">
+            Los planes Pro y Negocio se cobran en USD mediante PayPal. Los montos de deudas y pagos dentro de Kobri siguen en pesos dominicanos (RD$).
+          </p>
         </Modal>
       )}
     </div>
