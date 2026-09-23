@@ -128,9 +128,10 @@ function PayPalSubscriptionButton({ planName, onApproved }) {
           onCancel: () => {
             if (!cancelled) setStatus("Pago cancelado. No se activó el plan.")
           },
-          onError: () => {
-            if (!cancelled) setStatus("PayPal no pudo iniciar la suscripción. Intenta nuevamente.")
-          },
+         onError: (err) => {
+  console.error("PayPal error:", err)
+  setStatus(`Error de PayPal: ${err?.message || JSON.stringify(err)}`)
+}
         })
 
         buttons.render(containerRef.current)
