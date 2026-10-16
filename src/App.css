@@ -45,6 +45,10 @@
   --violet: #7a56dc;
   --violet-soft: #f0ecff;
 
+  --wa: #1fa855;
+  --wa-soft: #e3f6ea;
+  --wa-ink: #0f7a3d;
+
   /* Botón principal */
   --btn-bg: linear-gradient(180deg, #18274a 0%, #0b1324 100%);
   --btn-bg-hover: linear-gradient(180deg, #213462 0%, #101c38 100%);
@@ -116,6 +120,10 @@ html.kobri-dark {
 
   --violet: #b09cff;
   --violet-soft: rgba(176, 156, 255, 0.16);
+
+  --wa: #3ddc73;
+  --wa-soft: rgba(61, 220, 115, 0.16);
+  --wa-ink: #6be89c;
 
   --btn-bg: linear-gradient(180deg, #5878ff 0%, #4169ff 100%);
   --btn-bg-hover: linear-gradient(180deg, #6d8aff 0%, #5375ff 100%);
@@ -1370,15 +1378,29 @@ tbody tr:hover {
   min-width: 130px;
 }
 
-.amount-cell,
-.date-copy {
+.amount-cell {
   white-space: nowrap;
+}
+
+.date-copy {
+  white-space: normal;
 }
 
 .amount-cell strong {
   font-family: var(--font-display);
   font-weight: 800;
   letter-spacing: -0.01em;
+}
+
+.date-copy strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.date-copy span {
+  white-space: normal;
+  line-height: 1.25;
 }
 
 .date-copy span.is-late {
@@ -1533,8 +1555,8 @@ tbody tr:hover {
 
 .data-table th,
 .data-table td {
-  padding-left: 14px;
-  padding-right: 14px;
+  padding-left: 11px;
+  padding-right: 11px;
   overflow: hidden;
 }
 
@@ -1566,66 +1588,66 @@ tbody tr:hover {
 }
 
 .compact-table {
-  min-width: 720px;
+  min-width: 760px;
 }
 
 .compact-table th:nth-child(1),
 .compact-table td:nth-child(1) {
-  width: 27%;
+  width: 24%;
 }
 
 .compact-table th:nth-child(2),
 .compact-table td:nth-child(2) {
-  width: 25%;
+  width: 21%;
 }
 
 .compact-table th:nth-child(3),
 .compact-table td:nth-child(3) {
-  width: 19%;
+  width: 15%;
 }
 
 .compact-table th:nth-child(4),
 .compact-table td:nth-child(4) {
-  width: 15%;
+  width: 13%;
 }
 
 .compact-table th:nth-child(5),
 .compact-table td:nth-child(5) {
-  width: 14%;
+  width: 27%;
 }
 
 .detailed-table {
-  min-width: 760px;
+  min-width: 820px;
 }
 
 .detailed-table th:nth-child(1),
 .detailed-table td:nth-child(1) {
-  width: 22%;
+  width: 25%;
 }
 
 .detailed-table th:nth-child(2),
 .detailed-table td:nth-child(2) {
-  width: 21%;
+  width: 19%;
 }
 
 .detailed-table th:nth-child(3),
 .detailed-table td:nth-child(3) {
-  width: 15%;
+  width: 14%;
 }
 
 .detailed-table th:nth-child(4),
 .detailed-table td:nth-child(4) {
-  width: 16%;
+  width: 14%;
 }
 
 .detailed-table th:nth-child(5),
 .detailed-table td:nth-child(5) {
-  width: 13%;
+  width: 11%;
 }
 
 .detailed-table th:nth-child(6),
 .detailed-table td:nth-child(6) {
-  width: 13%;
+  width: 17%;
 }
 
 /* =========================================================
@@ -3776,5 +3798,96 @@ html.kobri-dark .help-intro-mark {
 
   .sidebar-bottom {
     margin-top: 24px;
+  }
+}
+
+/* =========================================================
+   RECORDATORIO POR WHATSAPP
+========================================================= */
+
+.action-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 5px;
+}
+
+.data-table .action-buttons .small-pay-button {
+  padding: 0 9px;
+}
+
+.whatsapp-button {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: var(--wa-soft);
+  color: var(--wa-ink);
+  border: 1px solid transparent;
+  transition: background 0.16s ease, color 0.16s ease, transform 0.16s ease;
+}
+
+a.whatsapp-button:hover {
+  background: var(--wa);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.whatsapp-button.is-disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.whatsapp-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--wa-ink);
+  border-color: color-mix(in srgb, var(--wa) 35%, var(--line-strong));
+}
+
+.whatsapp-cta:hover {
+  background: var(--wa-soft);
+  border-color: var(--wa);
+}
+
+.whatsapp-cta.is-disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+@media (max-width: 1100px) {
+  .cell-action .action-buttons {
+    width: 100%;
+  }
+
+  .cell-action .small-pay-button,
+  .cell-action .row-action {
+    flex: 1;
+  }
+
+  .cell-action .whatsapp-button {
+    flex: 0 0 46px;
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+  }
+
+  .cell-action .completed-check {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 500px) {
+  .detail-actions {
+    flex-wrap: wrap;
+  }
+
+  .detail-actions .whatsapp-cta {
+    width: 100%;
+    justify-content: center;
   }
 }
