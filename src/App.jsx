@@ -302,6 +302,12 @@ function Icon({ name, size = 20 }) {
         <path d="M4 6h16M4 12h16M4 18h16" />
       </>
     ),
+    whatsapp: (
+      <>
+        <path d="M20 11.5a8 8 0 0 1-7.8 8H12a7.9 7.9 0 0 1-3.8-1L4 20l1.5-4.2A7.9 7.9 0 0 1 4 11.5a8 8 0 0 1 16 0Z" />
+        <path d="M9.3 9.8c.2-.5.4-.5.6-.5h.4c.2 0 .4 0 .5.3l.6 1.4c.1.2 0 .4-.1.6l-.4.4c-.1.2-.1.3 0 .5.4.8 1.2 1.6 2 2 .2.1.3.1.5 0l.4-.4c.2-.1.4-.2.6-.1l1.4.6c.2.1.3.3.3.5v.4c0 .2 0 .5-.5.6-.5.2-1.1.3-1.8 0-1.5-.5-2.9-1.5-3.9-2.9-.3-.5-.2-1.3 0-1.8.1-.2.3-.4.4-.6Z" fill="currentColor" stroke="none" />
+      </>
+    ),
     settings: (
       <>
         <path d="M12.2 3h-.4a1.9 1.9 0 0 0-1.9 1.9v.2a1.9 1.9 0 0 1-.95 1.64l-.5.29a1.9 1.9 0 0 1-1.9 0l-.16-.1a1.9 1.9 0 0 0-2.6.7l-.2.35a1.9 1.9 0 0 0 .7 2.6l.16.1a1.9 1.9 0 0 1 .95 1.63v.58a1.9 1.9 0 0 1-.95 1.64l-.16.09a1.9 1.9 0 0 0-.7 2.6l.2.35a1.9 1.9 0 0 0 2.6.7l.16-.1a1.9 1.9 0 0 1 1.9 0l.5.29a1.9 1.9 0 0 1 .95 1.64v.2A1.9 1.9 0 0 0 11.8 21h.4a1.9 1.9 0 0 0 1.9-1.9v-.2a1.9 1.9 0 0 1 .95-1.64l.5-.29a1.9 1.9 0 0 1 1.9 0l.16.1a1.9 1.9 0 0 0 2.6-.7l.2-.35a1.9 1.9 0 0 0-.7-2.6l-.16-.09a1.9 1.9 0 0 1-.95-1.64v-.58a1.9 1.9 0 0 1 .95-1.63l.16-.1a1.9 1.9 0 0 0 .7-2.6l-.2-.35a1.9 1.9 0 0 0-2.6-.7l-.16.1a1.9 1.9 0 0 1-1.9 0l-.5-.29a1.9 1.9 0 0 1-.95-1.64v-.2A1.9 1.9 0 0 0 12.2 3Z" />
@@ -352,6 +358,61 @@ function avatarTone(name = "") {
   let sum = 0
   for (const char of name) sum += char.charCodeAt(0)
   return sum % 6
+}
+
+function digitsOnly(value = "") {
+  return String(value).replace(/\D/g, "")
+}
+
+// Normaliza un teléfono dominicano (u otro de 10 dígitos) al formato
+// internacional que exige wa.me: solo dígitos, con código de país.
+function toWhatsAppNumber(phone) {
+  const digits = digitsOnly(phone)
+  if (!digits) return ""
+  if (digits.length === 10) return `1${digits}`
+  if (digits.length === 11 && digits.startsWith("1")) return digits
+  if (digits.length > 7) return digits
+  return ""
+}
+
+function formatDueDateLong(dueDate) {
+  return new Date(`${dueDate}T12:00:00`).toLocaleDateString("es-DO", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  })
+}
+
+// Mensaje de cobro formal y cuidado, pensado para enviarse por WhatsApp.
+function buildPaymentReminderMessage({
+  businessName,
+  clientName,
+  concept,
+  amount,
+  dueDate,
+}) {
+  const firstName = (clientName || "").trim().split(" ")[0] || "estimado(a) cliente"
+
+  return [
+    `Estimado(a) ${firstName},`,
+    "",
+    `Le saluda ${businessName}. Le escribimos de manera cordial para recordarle sobre un pago pendiente asociado a su cuenta:`,
+    "",
+    `• Concepto: ${concept}`,
+    `• Monto pendiente: ${money(amount)}`,
+    `• Fecha de vencimiento: ${formatDueDateLong(dueDate)}`,
+    "",
+    "Quedamos atentos para coordinar su pago en el momento que le resulte conveniente. Agradecemos de antemano su preferencia y la confianza depositada en nosotros.",
+    "",
+    "Saludos cordiales,",
+    businessName,
+  ].join("\n")
+}
+
+function buildWhatsAppLink(phone, message) {
+  const number = toWhatsAppNumber(phone)
+  if (!number) return ""
+  return `https://wa.me/${number}?text=${encodeURIComponent(message)}`
 }
 
 function Progress({ value, tone = "accent" }) {
@@ -1205,6 +1266,7 @@ function App() {
                     rows={debtRows.slice(0, 5)}
                     onPay={openPayment}
                     onDetails={openDebtDetail}
+                    businessName={businessSettings.businessName}
                   />
                 )}
               </section>
@@ -1594,6 +1656,7 @@ function App() {
                     onPay={openPayment}
                     onDetails={openDebtDetail}
                     detailed
+                    businessName={businessSettings.businessName}
                   />
                 )}
               </div>
@@ -2049,6 +2112,39 @@ function App() {
 
           {selectedDebtDetail.balance > 0 && (
             <div className="detail-actions">
+              {(() => {
+                const link = buildWhatsAppLink(
+                  selectedDebtDetail.client?.phone,
+                  buildPaymentReminderMessage({
+                    businessName: businessSettings.businessName,
+                    clientName: selectedDebtDetail.client?.name,
+                    concept: selectedDebtDetail.concept,
+                    amount: selectedDebtDetail.balance,
+                    dueDate: selectedDebtDetail.dueDate,
+                  })
+                )
+
+                return link ? (
+                  <a
+                    className="secondary-button whatsapp-cta"
+                    href={link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Icon name="whatsapp" size={17} />
+                    Enviar recordatorio
+                  </a>
+                ) : (
+                  <span
+                    className="secondary-button whatsapp-cta is-disabled"
+                    title="Agrega un teléfono al cliente para enviar el recordatorio"
+                  >
+                    <Icon name="whatsapp" size={17} />
+                    Enviar recordatorio
+                  </span>
+                )
+              })()}
+
               <button
                 className="primary-button"
                 onClick={() => {
@@ -2384,7 +2480,7 @@ function App() {
   )
 }
 
-function DebtTable({ rows, onPay, onDetails, detailed = false }) {
+function DebtTable({ rows, onPay, onDetails, detailed = false, businessName }) {
   return (
     <div className="table-wrapper">
       <table className={`data-table stack-table debts-table ${detailed ? "detailed-table" : "compact-table"}`}>
@@ -2400,7 +2496,19 @@ function DebtTable({ rows, onPay, onDetails, detailed = false }) {
         </thead>
 
         <tbody>
-          {rows.map((debt) => (
+          {rows.map((debt) => {
+            const reminderLink = buildWhatsAppLink(
+              debt.client?.phone,
+              buildPaymentReminderMessage({
+                businessName,
+                clientName: debt.client?.name,
+                concept: debt.concept,
+                amount: debt.balance,
+                dueDate: debt.dueDate,
+              })
+            )
+
+            return (
             <tr key={debt.id}>
               <td className="cell-client">
                 <div className="client-cell client-identity">
@@ -2484,21 +2592,47 @@ function DebtTable({ rows, onPay, onDetails, detailed = false }) {
               </td>
 
               <td className="cell-action">
-                {debt.balance > 0 ? (
-                  <button
-                    className="small-pay-button"
-                    onClick={() => onPay(debt)}
-                  >
-                    Cobrar
-                  </button>
-                ) : (
-                  <div className="completed-check">
-                    <Icon name="check" size={15} />
-                  </div>
-                )}
+                <div className="action-buttons">
+                  {debt.balance > 0 ? (
+                    <button
+                      className="small-pay-button"
+                      onClick={() => onPay(debt)}
+                    >
+                      Cobrar
+                    </button>
+                  ) : (
+                    <div className="completed-check">
+                      <Icon name="check" size={15} />
+                    </div>
+                  )}
+
+                  {debt.balance > 0 &&
+                    (reminderLink ? (
+                      <a
+                        className="whatsapp-button"
+                        href={reminderLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title={`Enviar recordatorio a ${debt.client?.name || "cliente"} por WhatsApp`}
+                        aria-label={`Enviar recordatorio por WhatsApp a ${debt.client?.name || "cliente"}`}
+                        onClick={(event) => event.stopPropagation()}
+                      >
+                        <Icon name="whatsapp" size={16} />
+                      </a>
+                    ) : (
+                      <span
+                        className="whatsapp-button is-disabled"
+                        title="Agrega un teléfono al cliente para enviar el recordatorio"
+                        aria-disabled="true"
+                      >
+                        <Icon name="whatsapp" size={16} />
+                      </span>
+                    ))}
+                </div>
               </td>
             </tr>
-          ))}
+            )
+          })}
         </tbody>
       </table>
     </div>
