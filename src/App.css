@@ -718,14 +718,17 @@ select:focus-visible {
 .primary-button svg,
 .secondary-button svg,
 .small-pay-button svg,
-.text-button svg {
+.text-button svg,
+.whatsapp-cta svg {
   flex: 0 0 auto;
+  transform: translateY(3px);
 }
 
 .primary-button {
   min-height: 46px;
   padding: 0 20px;
   white-space: nowrap;
+  line-height: 1;
   border-radius: 12px;
   background: var(--btn-bg);
   color: var(--btn-ink);
@@ -777,6 +780,7 @@ select:focus-visible {
 .secondary-button {
   min-height: 46px;
   padding: 0 20px;
+  line-height: 1;
   border-radius: 12px;
   border: 1px solid var(--line-strong);
   background: var(--surface);
@@ -795,6 +799,7 @@ select:focus-visible {
   align-items: center;
   justify-content: center;
   gap: 8px;
+  line-height: 1;
   background: transparent;
   border: 0;
   box-shadow: none;
@@ -1483,6 +1488,7 @@ tbody tr:hover {
 .small-pay-button {
   min-height: 36px;
   padding: 0 14px;
+  line-height: 1;
   background: var(--accent-soft);
   border: 0;
   box-shadow: none;
@@ -3844,6 +3850,7 @@ a.whatsapp-button:hover {
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  line-height: 1;
   color: var(--wa-ink);
   border-color: color-mix(in srgb, var(--wa) 35%, var(--line-strong));
 }
